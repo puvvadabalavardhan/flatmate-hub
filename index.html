@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f4ef">
+<title>Flat Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1d1b18;--mute:#746e66;--line:#e7e2d9;--free:#1f9d55;--freebg:#e6f6ec;--busy:#d64545;--busybg:#fdecec;--warn:#c47f00;--warnbg:#fff4dc;--part:#2f6fd6;--partbg:#eaf1ff;--acc:#3b5bdb;--r:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:"Space Grotesk",Inter,system-ui,sans-serif;margin:0}
+button{font:inherit;cursor:pointer;border:0;color:inherit;touch-action:manipulation}
+button:disabled{opacity:.45;cursor:default}
+input,select,textarea{font:inherit;color:inherit;font-size:16px}
+.wrap{max-width:1040px;margin:0 auto;padding:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 10px}
+header h1{font-size:clamp(17px,5.2vw,24px);line-height:1.15}
+.me{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 13px;font-size:13px;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.sec-t{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:18px 4px 8px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.sec-t button{text-transform:none;letter-spacing:0;font-size:13px;color:var(--acc);background:none;font-weight:600;padding:4px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.key{background:#1d1b18;color:#fff;border-radius:14px;padding:12px;min-width:0}
+.key .l{font-size:12px;opacity:.7}
+.key .c{font-family:"Space Grotesk";font-size:22px;letter-spacing:.05em;word-break:break-all}
+.key .n{font-size:12px;opacity:.7;margin-top:2px}
+.banner{border-radius:14px;padding:11px 14px;margin-top:10px;font-size:14px;background:#efeaf9;color:#4a3a86}
+.banner.on{background:#3d2f7a;color:#fff}
+.rooms{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.room{border-radius:var(--r);padding:16px;border:2px solid transparent;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;align-content:start}
+.room.free{background:var(--freebg);border-color:#bfe6cd}
+.room.busy{background:var(--busybg);border-color:#f3c3c3}
+.room.late{background:var(--warnbg);border-color:#f0d494}
+.room.part{background:var(--partbg);border-color:#c6d7f6}
+.room .ic{font-size:38px;grid-row:span 2;line-height:1}
+.room h3{font-size:19px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{font:600 11.5px Inter,sans-serif;padding:3px 10px;border-radius:99px;color:#fff;letter-spacing:.02em}
+.free .pill{background:var(--free)}.busy .pill{background:var(--busy)}.late .pill{background:var(--warn)}.part .pill{background:var(--part)}
+.room .info{color:#4d4842;font-size:13.5px}
+.room .acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.big{flex:1;min-width:150px;padding:14px;border-radius:14px;font-weight:600;font-size:16px;color:#fff}
+.b-free{background:var(--free)}.b-busy{background:var(--busy)}.b-acc{background:var(--acc)}.b-urg{background:#e8590c}
+.ghost{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line);font-weight:500;font-size:14px}
+.sub{grid-column:1/-1;font-size:13px;margin-top:6px;color:#4d4842}
+.sub b{font-weight:600;color:var(--ink)}
+.hob{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;max-width:340px}
+.burner{aspect-ratio:2.2/1;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12.5px;background:#fff;border:2px dashed #b9c9e8;text-align:center;padding:4px;line-height:1.25}
+.burner.used{background:#2b2b2b;color:#fff;border:2px solid #e8590c;box-shadow:inset 0 0 0 4px #e8590c33}
+.burner.mine{border-color:var(--free);box-shadow:inset 0 0 0 4px #1f9d5544}
+.burner b{font-size:13.5px}
+.burner.sel{background:var(--acc);color:#fff;border:2px solid var(--acc)}
+.cook{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13.5px;padding:6px 0;border-top:1px solid #0000000f}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;z-index:5;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;max-width:190px;background:none;padding:9px 2px 11px;font-size:11.5px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:1px;position:relative}
+nav button span{font-size:21px}
+nav button.on{color:var(--acc);font-weight:600}
+.badge{position:absolute;top:4px;left:calc(50% + 6px);background:var(--busy);color:#fff;border-radius:99px;font-size:10.5px;padding:0 6px;font-weight:600}
+.view{display:none}.view.on{display:block}
+.seg{display:flex;background:#ece8e0;border-radius:12px;padding:3px;margin-bottom:12px;overflow-x:auto}
+.seg button{flex:1;background:none;padding:8px 10px;border-radius:10px;font-weight:500;white-space:nowrap;font-size:14px}
+.seg button.on{background:#fff;box-shadow:0 1px 3px #0002}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+input[type=text],input[type=time],input[type=date],select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;min-height:44px}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center}
+.post{border-left:4px solid var(--acc)}
+.post.c{border-left-color:var(--busy)}
+.post.closed{opacity:.6}
+.meta{font-size:12.5px;color:var(--mute);margin-bottom:6px}
+.post .txt{font-size:16px;font-weight:500;margin-bottom:10px;white-space:pre-wrap;word-break:break-word}
+.opt{display:block;width:100%;text-align:left;position:relative;overflow:hidden;background:#f3f1ec;border-radius:12px;padding:10px 12px;margin:6px 0;border:2px solid transparent}
+.opt.mine{border-color:var(--acc)}
+.opt .bar{position:absolute;inset:0 auto 0 0;background:#dfe5ff;z-index:0;transition:width .3s}
+.opt .in{position:relative;z-index:1;display:flex;justify-content:space-between;gap:8px}
+.opt .who{position:relative;z-index:1;font-size:12px;color:var(--mute)}
+.lnk{background:none;color:var(--mute);font-size:12.5px;text-decoration:underline;padding:6px}
+.list .it{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.list .it:last-child{border-bottom:0}
+.list .it .e{font-size:18px;width:24px;text-align:center}
+.list .it .t{flex:1;min-width:0}
+.list .it small{color:var(--mute);display:block;font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:8px 7px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#fff}
+th{font-size:11.5px;color:var(--mute);font-weight:600}
+.tw{overflow-x:auto;padding:6px 10px}
+.hl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.hl .card{margin:0;padding:13px}
+.hl .k{font-size:12px;color:var(--mute)}
+.hl .v{font-family:"Space Grotesk";font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hl .s{font-size:12.5px;color:var(--mute)}
+.bars .b{display:grid;grid-template-columns:minmax(70px,110px) 1fr 58px;gap:8px;align-items:center;font-size:13px;margin:6px 0}
+.bars .b span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bars .t{height:12px;background:#efece6;border-radius:6px;overflow:hidden}
+.bars .t i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.rep{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.rep{grid-template-columns:1fr}}
+.sheet{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:20}
+.sheet.on{display:flex}
+.sheet .box{background:#fff;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:540px;max-height:88vh;overflow:auto;-webkit-overflow-scrolling:touch}
+@media(min-width:700px){.sheet{align-items:center}.sheet .box{border-radius:22px}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chips button{padding:10px 14px;border-radius:99px;background:#f0ede7;font-weight:500;font-size:14px}
+.chips button.on{background:var(--acc);color:#fff}
+#toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);background:#1d1b18;color:#fff;padding:11px 16px;border-radius:12px;font-size:14px;z-index:50;display:none;max-width:92%;box-shadow:0 6px 20px #0003}
+#alert{position:fixed;inset:0;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:40;padding:30px}
+#alert.on{display:flex}
+#alert .e{font-size:76px;line-height:1.1}#alert h2{font-size:30px;margin:10px 0 6px}
+#alert .s{font-size:17px;max-width:420px;white-space:pre-wrap}
+#alert .chips{justify-content:center;margin-top:18px}
+#alert .chips button{background:#fff;color:#1d1b18;font-weight:600;padding:12px 16px}
+#alert .x{margin-top:16px;background:transparent;color:#fff;border:1px solid #fff9;padding:10px 20px;border-radius:12px}
+.empty{color:var(--mute);text-align:center;padding:18px}
+.note{font-size:13px;color:var(--mute)}
+#gate{display:none}
+body.locked .view,body.locked nav,body.locked #meBtn{display:none!important}
+.homebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.homebar .big{flex:0 0 auto}
+.ppl{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ppl span{padding:7px 12px;border-radius:99px;font-size:13.5px;background:#efece6;color:var(--mute)}
+.ppl span.in{background:var(--freebg);color:#14683a;font-weight:600;border:1px solid #bfe6cd}
+.threads .th{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);width:100%;background:none;text-align:left}
+.threads .th:last-child{border-bottom:0}
+.threads .av{width:42px;height:42px;border-radius:50%;background:#efece6;display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;font-weight:600}
+.threads .tx{flex:1;min-width:0}.threads .tx small{display:block;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.threads .un{background:var(--busy);color:#fff;border-radius:99px;font-size:12px;padding:1px 8px;font-weight:600}
+.chat-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.chat-h button{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.msgs{display:flex;flex-direction:column;gap:6px;min-height:40vh;max-height:calc(100vh - 290px);overflow-y:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.msg{max-width:82%;padding:8px 12px;border-radius:16px;background:#fff;border:1px solid var(--line);align-self:flex-start;word-break:break-word;white-space:pre-wrap}
+.msg.me{align-self:flex-end;background:var(--acc);color:#fff;border-color:var(--acc)}
+.msg.imp{border:2px solid #e8590c}
+.msg .w{font-size:11.5px;font-weight:600;opacity:.75;display:block}
+.msg .tm{font-size:10.5px;opacity:.6;display:block;text-align:right;margin-top:2px}
+.day{align-self:center;font-size:11.5px;color:var(--mute);margin:6px 0}
+.composer{display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:calc(66px + env(safe-area-inset-bottom));background:var(--bg);padding:8px 0}
+.composer textarea{min-height:46px;max-height:120px;flex:1}
+.composer .big{flex:0 0 auto;min-width:0;padding:12px 16px}
+.repl .it .big{flex:0 0 auto;min-width:0;padding:10px 14px;font-size:14px}
+@media(max-width:420px){.keys{gap:6px}.key{padding:9px}.key .c{font-size:16px}.big{min-width:130px;font-size:15px}}
+</style>
+</head>
+<body>
+<div id="toast" role="status"></div>
+<div id="alert" role="alertdialog"></div>
+
+<div class="wrap">
+  <header><h1 id="appName">🏠 Flat Hub</h1><button class="me" id="meBtn">…</button></header>
+  <div id="gate" class="card"></div>
+
+  <!-- HOME -->
+  <section class="view on" id="v-home">
+    <div class="sec-t" style="margin-top:4px">Entry keys</div>
+    <div class="keys" id="keys"></div>
+    <div id="quiet"></div>
+    <div class="sec-t">Who’s home</div>
+    <div class="card"><div class="homebar" id="homeBar"></div><div class="ppl" id="ppl"></div></div>
+    <div class="sec-t">Rooms — live</div>
+    <div class="rooms" id="rooms"></div>
+    <div class="sec-t">Guests staying <button id="addGuest">+ Add guest</button></div>
+    <div class="card list" id="guests"></div>
+    <div class="sec-t">Recent activity</div>
+    <div class="card list" id="activity"></div>
+    <div class="sec-t">Open questions &amp; complaints</div>
+    <div id="homeFeed"></div>
+  </section>
+
+  <!-- VOTES -->
+  <section class="view" id="v-talk">
+    <div class="card">
+      <div class="seg" id="kindSeg"><button data-k="poll" class="on">🗳️ Ask everyone</button><button data-k="complaint">⚠️ Complaint</button></div>
+      <div id="fPoll">
+        <label for="pQ">Your question</label>
+        <textarea id="pQ" placeholder="e.g. Deep clean the kitchen on Sunday 11am?"></textarea>
+        <label for="pO">Options (comma separated)</label>
+        <input type="text" id="pO" value="Yes, No">
+      </div>
+      <div id="fComp" style="display:none">
+        <label for="cAbout">About</label>
+        <select id="cAbout"></select>
+        <label for="cT">What's the problem?</label>
+        <textarea id="cT" placeholder="e.g. Dishes left in the sink overnight again"></textarea>
+        <label class="row" style="color:var(--ink)"><input type="checkbox" id="cAnon" style="width:22px;height:22px"> Post without showing my name</label>
+      </div>
+      <button class="big b-acc" style="width:100%;margin-top:12px" id="postBtn">Send to everyone</button>
+    </div>
+    <div class="seg" id="feedSeg"><button data-f="open" class="on">Open</button><button data-f="all">All</button></div>
+    <div id="feed"></div>
+  </section>
+
+  <!-- CHAT -->
+  <section class="view" id="v-chat">
+    <div id="chatList">
+      <div class="card threads" id="threads"></div>
+      <p class="note">📢 <b>Everyone</b> goes to the whole flat. Tap a name to message someone privately.</p>
+    </div>
+    <div id="chatThread" style="display:none">
+      <div class="chat-h"><button id="chatBack">← Back</button><h3 id="chatTitle" style="font-size:18px"></h3></div>
+      <div class="msgs" id="msgs"></div>
+      <label class="row" id="impRow" style="color:var(--ink);margin:0"><input type="checkbox" id="impChk" style="width:20px;height:20px"> 📢 Important — pop-up alert on everyone’s screen</label>
+      <div class="composer"><textarea id="msgIn" rows="1" maxlength="1000" placeholder="Message…"></textarea><button class="big b-acc" id="msgSend">Send</button></div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="view" id="v-stats">
+    <div class="seg" id="weekSeg"></div>
+    <div class="hl" id="hl"></div>
+    <div class="card"><h3 style="font-size:16px;margin-bottom:6px">Washroom + bath minutes</h3><div class="bars" id="bars"></div></div>
+    <div class="card tw"><table id="tbl"></table></div>
+    <div class="sec-t">Reports (PDF)</div>
+    <div class="card"><h3 style="font-size:16px">Weekly report</h3><p class="note">Everything each person did in the week selected above, day by day.</p><button class="big b-acc" style="width:100%" id="dlWeek">⬇ Download weekly PDF</button></div>
+    <div class="card"><h3 style="font-size:16px">Monthly reports — everyone combined</h3><p class="note">Saved automatically on the site every month, so anyone can download them any time — even months later.</p><div class="list repl" id="repList"></div></div>
+    <p class="note">Weeks run Monday → Sunday. “Avg/day” uses the days of the week so far. Day-by-day detail is kept for about 3 months; saved monthly reports are kept for good.</p>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="view" id="v-set">
+    <div class="card">
+      <h3 style="font-size:17px">You</h3>
+      <label for="myName">Name shown to flatmates (+ emoji)</label>
+      <div class="row"><input type="text" id="myName" maxlength="20"><input type="text" id="myEmoji" maxlength="4" style="width:70px;text-align:center" aria-label="Emoji"></div>
+      <button class="big b-acc" style="width:100%;margin-top:10px" id="saveMe">Save</button>
+    </div>
+    <div class="card">
+      <h3 style="font-size:17px">Entry keys (shown on home)</h3>
+      <div id="keyForm"></div>
+      <button class="big b-acc" style="width:100%;margin-top:12px" id="saveKeys">Save keys</button>
+    </div>
+    <div class="card">
+      <h3 style="font-size:17px">House</h3>
+      <label for="hName">House name (shown at the top)</label><input type="text" id="hName" maxlength="40" placeholder="e.g. 12 Baker Street">
+      <div class="row"><div style="flex:1"><label for="qFrom">From</label><input type="time" id="qFrom"></div><div style="flex:1"><label for="qTo">To</label><input type="time" id="qTo"></div></div>
+      <button class="big b-acc" style="width:100%;margin-top:12px" id="saveQuiet">Save</button>
+    </div>
+    <div class="card" id="notifCard" style="display:none"><h3 style="font-size:17px">📲 Phone notifications</h3><div id="notifBody"></div></div>
+    <div class="card" id="accessCard" style="display:none"><h3 style="font-size:17px">🔐 Who can use the app</h3><p class="note">Add each flatmate’s email (the one they sign in with).</p><div class="row"><input type="text" id="allowIn" inputmode="email" placeholder="friend@gmail.com" aria-label="Email to allow"><button class="ghost" id="allowAdd">Add</button></div><div class="list" id="allowList" style="margin-top:8px"></div></div>
+    <div class="card" id="acctCard" style="display:none"><h3 style="font-size:17px">Account</h3><div id="acctBody"></div></div>
+    <div class="card">
+      <h3 style="font-size:17px">Flatmates</h3>
+      <div id="memList" class="note"></div>
+    </div>
+    <p class="note">Alerts (your turn, urgent messages, laundry done) pop up while the app is open on your phone or laptop — keep the tab open in the background.</p>
+  </section>
+</div>
+
+<nav>
+  <button data-v="home" class="on"><span>🏠</span>Home</button>
+  <button data-v="chat"><span>💬</span>Chat<b class="badge" id="chatBadge" style="display:none"></b></button>
+  <button data-v="talk"><span>🗳️</span>Votes<b class="badge" id="talkBadge" style="display:none"></b></button>
+  <button data-v="stats"><span>📊</span>Stats</button>
+  <button data-v="set"><span>⚙️</span>Settings</button>
+</nav>
+
+<div class="sheet" id="sheet"><div class="box" id="sheetBox"></div></div>
+
+<script src="config.js"></script>
+<script>
+/* ======================= config ======================= */
+const ROOMS={
+  toilet:{name:'Washroom',ic:'🚽',kind:'simple',warn:15,stale:30,verb:'used the washroom'},
+  bath:{name:'Bathroom',ic:'🛁',kind:'simple',warn:25,stale:45,bookable:true,verb:'had a bath'},
+  kitchen:{name:'Kitchen',ic:'🍳',kind:'kitchen',stale:20,verb:'cooked'},
+  washer:{name:'Washing machine',ic:'🧺',kind:'washer',stale:20,verb:'ran a laundry load'}
+};
+let APP=(window.FLAT_CONFIG&&window.FLAT_CONFIG.houseName)||'Flat Hub';
+function setAppName(n){if(!n)return;APP=n;const h=document.getElementById('appName');if(h)h.textContent='🏠 '+n;document.title=n}
+setAppName(APP);
+const BURNERS=['Back left','Back right','Front left','Front right'];
+const NUDGE_REASONS=['I have college/work in 30 min 🏃','Really urgent, please hurry 🙏','My booked slot has started 📅','Need it in 5 min, please'];
+const NUDGE_REPLIES=['Coming out now ✅','2 more minutes','5 more minutes','Just started — 10 min, sorry'];
+const DAY=864e5,MIN=6e4,KEEP_DAYS=100,QUEUE_TTL=3*36e5;
+
+/* ======================= state & helpers ======================= */
+let db=null,user=null,uid=null,canWrite=true,downloads=null;
+const S={rooms:{},queue:[],members:{},polls:[],votes:[],sessions:[],keys:null,house:null,cooks:{},bookings:[],guests:[],nIn:[],nOut:[],presence:{},msgAll:[],msgIn:[],msgOut:[],reports:[]};
+let feedFilter='open',postKind='poll',statWeek=0,lastSeen=0,ready={};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nm=id=>{const m=S.members[id];return m?((m.emoji?m.emoji+' ':'')+m.name):'Someone'};
+const plain=id=>S.members[id]?.name||'Someone';
+const you=id=>id===uid?'You':esc(nm(id));
+const hm=t=>new Date(t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+const dshort=t=>new Date(t).toLocaleDateString([],{weekday:'short',day:'numeric',month:'short'});
+const dur=ms=>{const m=Math.max(0,Math.round(ms/MIN));return m<60?m+' min':Math.floor(m/60)+' h '+(m%60?m%60+' m':'')};
+const ago=t=>{const m=Math.round((Date.now()-t)/MIN);return m<1?'just now':m<60?m+' min ago':m<1440?Math.floor(m/60)+' h ago':Math.floor(m/1440)+' d ago'};
+const ymd=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const r1=v=>Math.round(v*10)/10;
+function weekStart(off=0,base=Date.now()){const d=new Date(base);d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7)+7*off);return d.getTime()}
+function monthStart(off=0){const d=new Date();return new Date(d.getFullYear(),d.getMonth()+off,1).getTime()}
+function dayStart(t){const d=new Date(t);d.setHours(0,0,0,0);return d.getTime()}
+function toast(t,ms=3600,onTap=null){const e=$('toast');e.textContent=t;e.style.display='block';e.style.cursor=onTap?'pointer':'';e.onclick=()=>{e.style.display='none';onTap&&onTap()};clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',ms)}
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+lastSeen=+store.get('seen')||0;
+
+/* ======================= sound / attention ======================= */
+let actx=null;
+document.addEventListener('pointerdown',()=>{try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.state==='suspended'&&actx.resume()}catch(e){}});
+function ding(){try{if(actx){[0,.18,.36].forEach((d,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=[660,880,1100][i];g.gain.setValueAtTime(.25,actx.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d+.25);o.connect(g).connect(actx.destination);o.start(actx.currentTime+d);o.stop(actx.currentTime+d+.3)})}}catch(e){}try{navigator.vibrate&&navigator.vibrate([250,120,250])}catch(e){}}
+let flashT=null;
+function flashTitle(t){clearInterval(flashT);let on=0;flashT=setInterval(()=>{document.title=(on^=1)?t:APP},900);setTimeout(()=>{clearInterval(flashT);document.title=APP},30000)}
+/* full-screen alert: {ic,title,sub,bg,chips:[{t,fn}],close} */
+const alertQ=[];
+function bigAlert(a){alertQ.push(a);if(!$('alert').classList.contains('on'))nextAlert();ding();flashTitle('🔔 '+a.title)}
+function nextAlert(){const a=alertQ.shift(),el=$('alert');if(!a){el.classList.remove('on');return}
+  el.style.background=a.bg||'var(--free)';
+  el.innerHTML=`<div class="e">${a.ic||'🔔'}</div><h2>${esc(a.title)}</h2><div class="s">${esc(a.sub||'')}</div><div class="chips">${(a.chips||[]).map((c,i)=>`<button data-i="${i}">${esc(c.t)}</button>`).join('')}</div>${a.extra||''}<button class="x">${esc(a.close||'Close')}</button>`;
+  el.classList.add('on');
+  el.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{a.chips[b.dataset.i].fn(el);nextAlert()});
+  el.querySelector('.x').onclick=()=>{a.onClose&&a.onClose();nextAlert()};
+}
+
+/* ======================= nav / sheet ======================= */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+function show(v){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  if(v==='talk'){lastSeen=Date.now();store.set('seen',lastSeen);renderBadge()}if(v==='stats')renderStats();if(v==='chat'&&openThread)markRead(openThread);window.scrollTo(0,0)}
+function openSheet(html){$('sheetBox').innerHTML=html;$('sheet').classList.add('on')}
+function closeSheet(){$('sheet').classList.remove('on')}
+$('sheet').onclick=e=>{if(e.target.id==='sheet'||e.target.closest('[data-cancel]'))closeSheet()};
+function chipPick(el,cb){el.onclick=e=>{const b=e.target.closest('button');if(!b)return;el.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));cb(b)}}
+function confirmSheet(title,text,btn,cls,fn){openSheet(`<h3>${esc(title)}</h3><p class="note">${esc(text)}</p><div class="row"><button class="big ${cls}" id="cy">${esc(btn)}</button><button class="ghost" data-cancel>Cancel</button></div>`);$('cy').onclick=()=>{closeSheet();fn()}}
+
+/* ======================= writes ======================= */
+async function safe(fn){if(!db){toast('Not connected yet');return false}
+  try{await fn();return true}catch(e){console.error(e);
+    if(e&&e.code==='invalid_argument'&&!canWrite)toast('You can only view — ask the owner to invite you as an Editor.');
+    else if(e&&e.code==='invalid_argument'){canWrite=false;toast('You can only view — ask the owner to invite you as an Editor.')}
+    else if(e&&e.code==='permission_denied')toast('No access — ask the flat admin to add your email, then reload.');
+    else if(e&&e.code==='quota_exceeded')toast('Free daily limit reached — it resets tomorrow.');
+    else if(e&&e.code==='resource_exhausted')toast('Too fast — wait a moment and try again.');
+    else toast('Could not save — check your connection and try again.');return false}}
+
+/* ======================= keys / quiet / guests ======================= */
+function renderKeys(){
+  const items=S.keys?.items?.filter(k=>k.label||k.code)||[];
+  $('keys').innerHTML=items.length?items.map(k=>`<div class="key"><div class="l">${esc(k.label||'Key')}</div><div class="c">${esc(k.code||'—')}</div>${k.note?`<div class="n">${esc(k.note)}</div>`:''}</div>`).join('')
+   :`<div class="card note" style="grid-column:1/-1;margin:0">No entry keys yet — add them in ⚙️ Settings.</div>`;
+  if(!$('keyForm').dataset.dirty){const f=S.keys?.items||[];$('keyForm').innerHTML=[0,1,2].map(i=>`<label>Key ${i+1}</label><div class="row"><input type="text" placeholder="Name (e.g. Building door)" data-ki="${i}" data-f="label" value="${esc(f[i]?.label||'')}"><input type="text" placeholder="Code" data-ki="${i}" data-f="code" value="${esc(f[i]?.code||'')}" style="max-width:130px"></div><input type="text" style="margin-top:6px" placeholder="Note (optional, e.g. lockbox left of door)" data-ki="${i}" data-f="note" value="${esc(f[i]?.note||'')}">`).join('')}
+}
+$('keyForm').oninput=()=>$('keyForm').dataset.dirty=1;
+$('saveKeys').onclick=async()=>{const items=[0,1,2].map(()=>({label:'',code:'',note:''}));document.querySelectorAll('#keyForm input').forEach(i=>items[i.dataset.ki][i.dataset.f]=i.value.trim());
+  if(await safe(()=>db.doc('settings/keys').set({items,by:uid,at:Date.now()}))){delete $('keyForm').dataset.dirty;toast('Keys saved ✔')}};
+
+const toMin=s=>{if(!s)return null;const[h,m]=s.split(':').map(Number);return h*60+m};
+function inQuiet(t=Date.now()){const h=S.house;if(!h?.quietFrom||!h?.quietTo)return false;const d=new Date(t),n=d.getHours()*60+d.getMinutes(),a=toMin(h.quietFrom),b=toMin(h.quietTo);return a<=b?(n>=a&&n<b):(n>=a||n<b)}
+function renderQuiet(){const h=S.house;
+  $('quiet').innerHTML=h?.quietFrom?`<div class="banner ${inQuiet()?'on':''}">${inQuiet()?'🤫 <b>Quiet hours now</b> — please keep it down until '+esc(h.quietTo):'🌙 Quiet hours: '+esc(h.quietFrom)+' – '+esc(h.quietTo)}</div>`:'';
+  if(!$('qFrom').matches(':focus')){$('qFrom').value=h?.quietFrom||'23:00';$('qTo').value=h?.quietTo||'07:00'}
+  if(h?.name){setAppName(h.name);if(!$('hName').matches(':focus'))$('hName').value=h.name}}
+$('saveQuiet').onclick=async()=>{const name=$('hName').value.trim();if(await safe(()=>db.doc('settings/house').set({...(S.house||{}),quietFrom:$('qFrom').value,quietTo:$('qTo').value,...(name?{name}:{})})))toast('Saved ✔')};
+
+function nightsBetween(from,to,a,b){/* guest nights inside [a,b) */let n=0;for(let t=dayStart(from);t<dayStart(to);t+=DAY){const mid=t+DAY/2;if(mid>=a&&mid<b)n++}return n}
+function renderGuests(){
+  const now=Date.now(),list=S.guests.filter(g=>g.to>=dayStart(now)).sort((a,b)=>a.from-b.from);
+  $('guests').innerHTML=list.length?list.map(g=>{const nowIn=g.from<=now&&now<g.to+DAY;return `<div class="it"><div class="e">${nowIn?'🛏️':'📅'}</div><div class="t"><b>${esc(g.guest)}</b> · guest of ${you(g.uid)}<small>${dshort(g.from)} → ${dshort(g.to)} · ${Math.max(1,Math.round((dayStart(g.to)-dayStart(g.from))/DAY))} night(s)${g.note?' · '+esc(g.note):''}</small></div>${g.uid===uid?`<button class="lnk" data-delguest="${g.id}">Remove</button>`:''}</div>`}).join('')
+    :'<div class="empty" style="padding:8px">No guests announced.</div>';
+}
+$('addGuest').onclick=()=>{const t=new Date(),iso=d=>new Date(d-new Date(d).getTimezoneOffset()*MIN).toISOString().slice(0,10);
+  openSheet(`<h3>👥 Announce a guest</h3><p class="note">Let everyone know someone is staying over.</p><label for="gN">Guest name</label><input type="text" id="gN" maxlength="30"><div class="row"><div style="flex:1"><label for="gF">Arrives</label><input type="date" id="gF" value="${iso(+t)}"></div><div style="flex:1"><label for="gT">Leaves</label><input type="date" id="gT" value="${iso(+t+DAY)}"></div></div><label for="gNo">Note (optional)</label><input type="text" id="gNo" maxlength="60" placeholder="e.g. sleeping in my room, will use bath in the morning"><div class="row" style="margin-top:14px"><button class="big b-acc" id="gGo">Announce</button><button class="ghost" data-cancel>Cancel</button></div>`);
+  $('gGo').onclick=async()=>{const g=$('gN').value.trim(),f=$('gF').valueAsDate,to=$('gT').valueAsDate;if(!g||!f||!to)return toast('Fill name and dates');
+    const from=new Date(f.getUTCFullYear(),f.getUTCMonth(),f.getUTCDate()).getTime(),till=new Date(to.getUTCFullYear(),to.getUTCMonth(),to.getUTCDate()).getTime();
+    if(till<=from)return toast('Leave date must be after arrival');
+    if(await safe(()=>db.collection('guests').add({uid,guest:g,from,to:till,note:$('gNo').value.trim(),at:Date.now()}))){push('flat',{title:'👥 Guest notice',msg:`${plain(uid)}: ${g} staying ${dshort(from)} → ${dshort(till)}`,p:2});closeSheet();toast('Guest announced ✔')}}};
+
+/* ======================= rooms ======================= */
+const qFor=id=>S.queue.filter(q=>q.room===id&&q.at>Date.now()-QUEUE_TTL).sort((a,b)=>a.at-b.at);
+const cooks=()=>Object.entries(S.cooks).map(([id,d])=>({id,...d}));
+function usedBurners(){const m={};cooks().forEach(c=>(c.burners||[]).forEach(b=>m[b]=c.id));return m}
+function roomState(id){
+  const R=ROOMS[id],now=Date.now();
+  if(R.kind==='kitchen'){const n=Object.keys(usedBurners()).length,late=cooks().some(c=>c.until&&now>c.until);
+    return n===0?{cls:'free',label:'ALL 4 FREE'}:n>=4?{cls:late?'late':'busy',label:'ALL BURNERS IN USE'}:{cls:late?'late':'part',label:`${n}/4 IN USE`}}
+  const d=S.rooms[id]||{busy:false};
+  if(!d.busy)return{d,cls:'free',label:'FREE'};
+  if(R.kind==='washer')return now<d.until?{d,cls:'busy',label:'RUNNING'}:{d,cls:'late',label:'DONE — EMPTY IT'};
+  const el=now-d.since,late=el>R.warn*MIN;return{d,cls:late?'late':'busy',label:late?'TAKING LONG':'OCCUPIED',el};
+}
+function canForce(id){const R=ROOMS[id],d=S.rooms[id],now=Date.now();if(!d?.busy||d.by===uid)return false;
+  return R.kind==='washer'?now>d.until+R.stale*MIN:now-d.since>R.stale*MIN}
+function queueHTML(id){const q=qFor(id);return q.length?`<div class="sub">✋ Waiting: ${q.map((x,i)=>`<b>${i+1}. ${you(x.uid)}</b>`).join(' → ')}</div>`:''}
+function queueBtn(id,label){const pos=qFor(id).findIndex(x=>x.uid===uid);return pos>=0?`<button class="ghost" data-act="unq" data-r="${id}">Leave queue (you’re #${pos+1})</button>`:`<button class="big b-acc" data-act="q" data-r="${id}">${label||'✋ I’m next — alert me'}</button>`}
+function bookingsHTML(){const now=Date.now(),up=S.bookings.filter(b=>b.room==='bath'&&b.end>now).sort((a,b)=>a.start-b.start).slice(0,4);
+  return `<div class="sub">📅 ${up.length?'Booked: '+up.map(b=>`<b>${dayStart(b.start)===dayStart(now)?'':dshort(b.start)+' '}${hm(b.start)}–${hm(b.end)} ${you(b.uid)}</b>${b.uid===uid?` <button class="lnk" data-delbook="${b.id}" style="padding:0 4px">cancel</button>`:''}`).join(' · '):'No bath slots booked'}</div>`}
+
+function renderRooms(){
+  $('rooms').innerHTML=Object.keys(ROOMS).map(id=>{
+    const R=ROOMS[id],st=roomState(id);let info='',acts='',extra='';
+    if(R.kind==='kitchen'){
+      const used=usedBurners(),mine=S.cooks[uid],free=4-Object.keys(used).length,now=Date.now();
+      info=free===4?'Nobody cooking — 4 burners free':`${free} burner${free===1?'':'s'} free`;
+      extra=`<div class="hob">${BURNERS.map((b,i)=>used[i]!==undefined?`<div class="burner used ${used[i]===uid?'mine':''}"><b>🔥 ${used[i]===uid?'You':esc(plain(used[i]))}</b>${b}</div>`:`<div class="burner"><b>Free</b>${b}</div>`).join('')}</div>`;
+      extra+=cooks().map(c=>`<div class="cook"><span>${c.id===uid?'<b>You</b>':'<b>'+esc(nm(c.id))+'</b>'} · ${c.burners.length} burner${c.burners.length>1?'s':''} · until ${hm(c.until)}${now>c.until?' <b style="color:var(--warn)">(over by '+dur(now-c.until)+')</b>':''}${c.note?' · '+esc(c.note):''}</span>${c.id!==uid?(now>c.until+R.stale*MIN?`<button class="lnk" data-act="forcecook" data-u="${c.id}">mark done</button>`:`<button class="lnk" data-act="nudge" data-r="kitchen" data-u="${c.id}">⚡ message</button>`):''}</div>`).join('');
+      if(mine)acts=`<button class="big b-busy" data-act="free" data-r="kitchen">Done cooking ✔</button><button class="ghost" data-act="cook" data-r="kitchen">Change burners</button><button class="ghost" data-act="extend" data-r="kitchen">+15 min</button>`;
+      else if(free>0)acts=`<button class="big b-free" data-act="cook" data-r="kitchen">🔥 Use burners (${free} free)</button>`;
+      else acts=queueBtn('kitchen','✋ Alert me when a burner frees');
+      return `<div class="room ${st.cls}"><div class="ic">${R.ic}</div><h3>${R.name} <span class="pill">${st.label}</span></h3><div class="info">${info}</div>${extra}${queueHTML('kitchen')}<div class="acts">${acts}</div></div>`;
+    }
+    const d=st.d;
+    if(!d.busy){
+      info=d.lastBy?`Last: ${you(d.lastBy)} · ${ago(d.lastEnd)}`:'Nobody inside';
+      acts=R.kind==='washer'?`<button class="big b-free" data-act="wash" data-r="${id}">Start a wash</button>`:`<button class="big b-free" data-act="take" data-r="${id}">Tap — I’m going in</button>`;
+      if(qFor(id).some(x=>x.uid===uid))acts+=queueBtn(id);
+    }else if(R.kind==='washer'){
+      const now=Date.now();
+      info=now<d.until?`${you(d.by)} · ${d.program?esc(d.program)+' · ':''}done at ${hm(d.until)} (${dur(d.until-now)} left)`:`${you(d.by)}’s laundry finished ${ago(d.until)} — waiting to be taken out`;
+      if(d.by===uid)acts=`<button class="big b-busy" data-act="free" data-r="${id}">${now<d.until?'Cancel / stopped early':'I took my laundry out ✔'}</button>`;
+      else{acts=queueBtn(id,'✋ Alert me when free');if(canForce(id))acts+=`<button class="ghost" data-act="force" data-r="${id}">I moved their laundry out</button>`;else if(now>=d.until)acts+=`<button class="ghost" data-act="nudge" data-r="${id}">⚡ Remind them</button>`}
+    }else{
+      info=`${you(d.by)} · since ${hm(d.since)} (${dur(st.el)})`;
+      if(d.by===uid)acts=`<button class="big b-busy" data-act="free" data-r="${id}">Tap — I’m done ✔</button>`;
+      else{acts=queueBtn(id)+`<button class="big b-urg" data-act="nudge" data-r="${id}">⚡ Urgent — message them</button>`;if(canForce(id))acts+=`<button class="ghost" data-act="force" data-r="${id}">Mark free (forgot to tap?)</button>`}
+    }
+    if(R.bookable){extra=bookingsHTML();acts+=`<button class="ghost" data-act="book" data-r="${id}">📅 Book a slot</button>`}
+    return `<div class="room ${st.cls}"><div class="ic">${R.ic}</div><h3>${R.name} <span class="pill">${st.label}</span></h3><div class="info">${info}</div>${extra}${queueHTML(id)}<div class="acts">${acts}</div></div>`;
+  }).join('');
+}
+$('rooms').onclick=e=>{
+  const db_=e.target.closest('[data-delbook]');if(db_){const id=db_.dataset.delbook;confirmSheet('Cancel this booking?','Your bath slot will be freed for others.','Cancel booking','b-busy',()=>safe(()=>db.doc('bookings/'+id).delete()));return}
+  const b=e.target.closest('[data-act]');if(!b)return;const r=b.dataset.r;
+  const A={take:()=>tryEnter(r),free:()=>release(r),q:()=>joinQ(r),unq:()=>leaveQ(r),extend:()=>extendCook(),
+    cook:()=>kitchenSheet(),wash:()=>washSheet(),book:()=>bookSheet(),
+    nudge:()=>nudgeSheet(r,b.dataset.u||S.rooms[r]?.by),
+    force:()=>confirmSheet(`Mark ${ROOMS[r].name} free?`,`${plain(S.rooms[r].by)} probably forgot to tap. Their time is counted only up to the normal limit.`,'Yes, mark free','b-busy',()=>release(r,true)),
+    forcecook:()=>confirmSheet('Mark their cooking done?',`${plain(b.dataset.u)} is way past their booked time. Their burners will be freed.`,'Yes, free burners','b-busy',()=>releaseCook(b.dataset.u,true))};
+  A[b.dataset.act]?.();
+};
+
+/* ---- simple rooms ---- */
+function tryEnter(room){
+  const now=Date.now(),bk=S.bookings.find(b=>b.room===room&&b.uid!==uid&&b.start-10*MIN<=now&&now<b.end);
+  if(bk)return confirmSheet('This slot is booked',`${plain(bk.uid)} booked the bathroom ${hm(bk.start)}–${hm(bk.end)}. Go in anyway?`,'Go in anyway','b-urg',()=>claim(room));
+  claim(room);
+}
+async function lock(ref){for(let i=0;i<8;i++){const l=await ref.acquire({holder:uid,ttlMs:2500});if(l.acquired)return true;await new Promise(r=>setTimeout(r,400+Math.random()*300))}return false}
+async function claim(room,extra={}){
+  await safe(async()=>{
+    const ref=db.doc('rooms/'+room);
+    if(!await lock(ref)){toast('Someone is grabbing it right now — try again');return}
+    const s=await ref.get(),d=s.exists?s.data():null;
+    if(d&&d.busy&&d.by!==uid){toast(plain(d.by)+' just took it!');return}
+    await ref.set({busy:true,by:uid,since:Date.now(),lastBy:d?.lastBy||null,lastEnd:d?.lastEnd||null,...extra});
+    if(S.queue.some(q=>q.room===room&&q.uid===uid))await db.doc('queue/'+room+'__'+uid).delete();
+    toast(ROOMS[room].name+' is now marked '+(ROOMS[room].kind==='washer'?'running':'occupied'));
+    if(ROOMS[room].kind==='washer'&&extra.until)push(uid,{title:'🧺 Your laundry should be done',msg:'Please take it out so others can use the machine — then tap “I took my laundry out” in the app.',p:4,at:extra.until});
+  });
+}
+async function release(room,forced=false){
+  if(room==='kitchen')return releaseCook(uid);
+  const d=S.rooms[room];if(!d||!d.busy)return;
+  const R=ROOMS[room];let end=Date.now();
+  if(forced&&R.kind==='simple')end=Math.min(end,d.since+R.warn*MIN);
+  if(R.kind==='washer')end=Math.min(end,d.until);
+  const first=firstWaiting(room,d.by);
+  const ok=await safe(async()=>{
+    await db.collection('sessions').add({room,uid:d.by,start:d.since,end,mins:r1((end-d.since)/MIN),forcedBy:forced?uid:null});
+    await db.doc('rooms/'+room).set({busy:false,lastBy:d.by,lastEnd:Date.now()});
+    toast(forced?'Marked free':'Thanks! '+R.name+' is free now — everyone can see it');
+  });
+  if(ok){push('flat',{title:`✅ ${R.name} is free`,msg:`${plain(d.by)} is done${R.kind==='simple'?' ('+dur(end-d.since)+')':''}${forced?' — marked free by '+plain(uid):''}`,p:3});
+    if(first)push(first.uid,{title:`🔔 Your turn — ${R.name} is free`,msg:'You’re first in line. Open the app to take it.',p:5})}
+}
+async function joinQ(room){if(await safe(()=>db.doc('queue/'+room+'__'+uid).set({room,uid,at:Date.now()})))toast('You’re in the queue — you’ll get a notification when it’s free')}
+async function leaveQ(room){await safe(()=>db.doc('queue/'+room+'__'+uid).delete())}
+
+/* ---- washer ---- */
+function washSheet(){let mins=60,prog='Normal 60 min';
+  openSheet(`<h3>🧺 Start a wash</h3><p class="note">Pick the programme length — everyone will see when it finishes.</p><div class="chips" id="wc">${[['Quick 30 min',30],['Synthetics 45',45],['Normal 60 min',60],['Cotton 90',90],['Heavy 2 h',120],['Long 3 h',180]].map(([t,m])=>`<button data-m="${m}" data-t="${t}" class="${m===60?'on':''}">${t}</button>`).join('')}</div><div class="row" style="margin-top:14px"><button class="big b-free" id="wGo">Start</button><button class="ghost" data-cancel>Cancel</button></div>`);
+  chipPick($('wc'),b=>{mins=+b.dataset.m;prog=b.dataset.t});
+  $('wGo').onclick=()=>{closeSheet();claim('washer',{until:Date.now()+mins*MIN,program:prog})};
+}
+
+/* ---- kitchen ---- */
+function kitchenSheet(){
+  const used=usedBurners(),mine=S.cooks[uid];let sel=new Set(mine?.burners||[]),mins=30;
+  const draw=()=>{$('kb').innerHTML=BURNERS.map((b,i)=>{const u=used[i];const other=u!==undefined&&u!==uid;return `<button class="burner ${sel.has(i)?'sel':''} ${other?'used':''}" data-b="${i}" ${other?'disabled':''}><b>${other?'🔥 '+esc(plain(u)):sel.has(i)?'✔ Yours':'Free'}</b>${b}</button>`}).join('');$('kGo').textContent=sel.size?`Use ${sel.size} burner${sel.size>1?'s':''}`:'Pick burners';$('kGo').disabled=!sel.size&&!mine};
+  openSheet(`<h3>🍳 ${mine?'Change your burners':'Use the stove'}</h3><p class="note">Tap the burners you’ll use — the rest stay free for others.</p><div class="hob" id="kb" style="max-width:none"></div>
+    <div class="chips" style="margin-top:12px"><button id="kAll2">2 burners</button><button id="kOne">1 burner</button><button id="kAll">All free</button></div>
+    ${mine?'':`<label>How long?</label><div class="chips" id="kc">${[15,30,45,60,90,120].map(m=>`<button data-m="${m}" class="${m===30?'on':''}">${m<60?m+' min':m/60+' h'}</button>`).join('')}</div><label for="kUntil">…or until</label><input type="time" id="kUntil">`}
+    <label for="kNote">Cooking what? (optional)</label><input type="text" id="kNote" maxlength="40" placeholder="e.g. rice + dal" value="${esc(mine?.note||'')}">
+    <div class="row" style="margin-top:14px"><button class="big b-free" id="kGo">Use</button>${mine?'<button class="ghost" id="kStop">Stop cooking</button>':''}<button class="ghost" data-cancel>Cancel</button></div>`);
+  const freeIdx=()=>[0,1,2,3].filter(i=>used[i]===undefined||used[i]===uid);
+  $('kb').onclick=e=>{const b=e.target.closest('[data-b]');if(!b||b.disabled)return;const i=+b.dataset.b;sel.has(i)?sel.delete(i):sel.add(i);draw()};
+  $('kAll').onclick=()=>{sel=new Set(freeIdx());draw()};$('kOne').onclick=()=>{sel=new Set(freeIdx().slice(0,1));draw()};$('kAll2').onclick=()=>{sel=new Set(freeIdx().slice(0,2));draw()};
+  if(!mine){chipPick($('kc'),b=>{mins=+b.dataset.m;$('kUntil').value=''});$('kUntil').oninput=()=>$('kc').querySelectorAll('button').forEach(x=>x.classList.remove('on'))}
+  if(mine)$('kStop').onclick=()=>{closeSheet();releaseCook(uid)};
+  $('kGo').onclick=()=>{if(!sel.size)return;let until=mine?mine.until:Date.now()+mins*MIN;
+    if(!mine&&$('kUntil').value){const[h,m]=$('kUntil').value.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);if(d<Date.now())d.setDate(d.getDate()+1);until=+d}
+    closeSheet();cook([...sel].sort(),until,$('kNote').value.trim())};
+  draw();
+}
+async function cook(burners,until,note){
+  await safe(async()=>{
+    if(!await lock(db.doc('rooms/kitchen'))){toast('Someone is booking burners right now — try again');return}
+    const snap=await db.collection('kitchen').get(),taken={};
+    snap.docs.forEach(d=>{if(d.id!==uid)(d.data().burners||[]).forEach(b=>taken[b]=d.id)});
+    const clash=burners.filter(b=>taken[b]!==undefined);
+    if(clash.length){toast(`${plain(taken[clash[0]])} just took the ${BURNERS[clash[0]].toLowerCase()} burner`);return}
+    const prev=S.cooks[uid];
+    await db.doc('kitchen/'+uid).set({burners,since:prev?.since||Date.now(),until,note,maxB:Math.max(burners.length,prev?.maxB||0)});
+    if(S.queue.some(q=>q.room==='kitchen'&&q.uid===uid))await db.doc('queue/kitchen__'+uid).delete();
+    toast(`You’re using ${burners.length} burner${burners.length>1?'s':''} until ${hm(until)}`);
+    if(!prev)push(uid,{title:'⏰ Your kitchen time is up',msg:'Tap “Done cooking” or “+15 min” in the app so others know.',p:3,at:until});
+  });
+}
+async function extendCook(){const c=S.cooks[uid];if(c)await safe(()=>db.doc('kitchen/'+uid).update({until:Math.max(c.until,Date.now())+15*MIN}))}
+async function releaseCook(who,forced=false){const c=S.cooks[who];if(!c)return;const end=forced?Math.min(Date.now(),c.until):Date.now();
+  const first=firstWaiting('kitchen',who);
+  const ok=await safe(async()=>{await db.collection('sessions').add({room:'kitchen',uid:who,start:c.since,end,mins:r1((end-c.since)/MIN),burners:c.maxB||c.burners.length,forcedBy:forced?uid:null});await db.doc('kitchen/'+who).delete();toast(forced?'Burners freed':'Thanks! Your burners are free now')});
+  if(ok){const free=4-Object.entries(usedBurners()).filter(([b,u])=>u!==who).length;push('flat',{title:`🍳 Kitchen: ${free} burner${free===1?'':'s'} free`,msg:`${plain(who)} finished cooking`,p:3});
+    if(first)push(first.uid,{title:'🔔 A burner is free!',msg:'You were first in line for the kitchen.',p:5})}}
+
+/* ---- bath bookings ---- */
+function bookSheet(){let day=0,mins=20;
+  openSheet(`<h3>📅 Book the bathroom</h3><p class="note">Reserve a slot — others get a warning if they try to go in during it, and you get an alert when it starts.</p>
+   <div class="chips" id="bd"><button class="on" data-d="0">Today</button><button data-d="1">Tomorrow</button><button data-d="2">${dshort(Date.now()+2*DAY)}</button></div>
+   <label for="bT">Start time</label><input type="time" id="bT" value="07:30">
+   <label>Length</label><div class="chips" id="bm">${[10,15,20,30,45].map(m=>`<button data-m="${m}" class="${m===20?'on':''}">${m} min</button>`).join('')}</div>
+   <div class="row" style="margin-top:14px"><button class="big b-acc" id="bGo">Book</button><button class="ghost" data-cancel>Cancel</button></div>`);
+  chipPick($('bd'),b=>day=+b.dataset.d);chipPick($('bm'),b=>mins=+b.dataset.m);
+  $('bGo').onclick=async()=>{const v=$('bT').value;if(!v)return toast('Pick a time');const[h,m]=v.split(':').map(Number);const d=new Date();d.setDate(d.getDate()+day);d.setHours(h,m,0,0);
+    const start=+d,end=start+mins*MIN;if(end<Date.now())return toast('That time has already passed');
+    const c=S.bookings.find(b=>b.room==='bath'&&b.start<end&&start<b.end);if(c)return toast(`Clashes with ${plain(c.uid)} (${hm(c.start)}–${hm(c.end)})`);
+    if(await safe(()=>db.collection('bookings').add({room:'bath',uid,start,end,at:Date.now()}))){push(uid,{title:'🛁 Your bath slot starts now',msg:`${hm(start)}–${hm(end)} — open the app and tap “I’m going in”.`,p:4,at:start});closeSheet();toast(`Booked ${dshort(start)} ${hm(start)}–${hm(end)} ✔`)}};
+}
+
+/* ======================= urgent messages ======================= */
+function nudgeSheet(room,to){
+  if(!to)return;let text=NUDGE_REASONS[0];
+  const recent=S.nOut.find(n=>n.to===to&&!n.reply&&Date.now()-n.at<2*MIN);
+  if(recent)return toast('You already messaged them — wait for a reply');
+  openSheet(`<h3>⚡ Message ${esc(plain(to))}</h3><p class="note">They get a full-screen alert on their phone (if the app is open) and can reply with one tap.</p><div class="chips" id="nr">${NUDGE_REASONS.map((r,i)=>`<button class="${i?'':'on'}">${esc(r)}</button>`).join('')}</div><label for="nT">Or write your own</label><input type="text" id="nT" maxlength="80" placeholder="e.g. Exam at 9, need 5 min please!"><div class="row" style="margin-top:14px"><button class="big b-urg" id="nGo">Send urgent message</button><button class="ghost" data-cancel>Cancel</button></div>`);
+  chipPick($('nr'),b=>text=b.textContent);
+  $('nGo').onclick=async()=>{const t=$('nT').value.trim()||text;if(await safe(()=>db.collection('nudges').add({from:uid,to,room,text:t,at:Date.now(),reply:null,replyAt:null}))){push(to,{title:`⚡ ${plain(uid)} needs the ${ROOMS[room]?.name||'room'}`,msg:t+' — open the app to reply',p:5});closeSheet();toast('Sent ⚡ — you’ll see their reply here')}};
+}
+const shownIn=new Set(),seenReply=new Set();let nudgeInit=false,nudgeOutInit=false;
+function onNudgesIn(){const now=Date.now();
+  S.nIn.filter(n=>!n.reply&&now-n.at<20*MIN&&!shownIn.has(n.id)).sort((a,b)=>a.at-b.at).forEach(n=>{shownIn.add(n.id);
+    let custom='';
+    bigAlert({ic:'⚡',bg:'#e8590c',title:`${plain(n.from)} needs the ${ROOMS[n.room]?.name||'room'}`,sub:'“'+n.text+'”',
+      chips:NUDGE_REPLIES.map(t=>({t,fn:()=>replyNudge(n.id,t)})),
+      extra:`<div class="row" style="max-width:420px;width:100%;margin-top:12px"><input type="text" id="rT" maxlength="60" placeholder="Type a reply…" style="color:#1d1b18"><button class="ghost" id="rGo" style="color:#1d1b18">Send</button></div>`,close:'Reply later'});
+    setTimeout(()=>{const g=$('rGo');if(g)g.onclick=()=>{const v=$('rT').value.trim();if(v){replyNudge(n.id,v);nextAlert()}}},0);
+  })}
+async function replyNudge(id,t){if(await safe(()=>db.doc('nudges/'+id).update({reply:t,replyAt:Date.now()}))){toast('Reply sent ✔');const n=S.nIn.find(x=>x.id===id);if(n)push(n.from,{title:`💬 ${plain(uid)} replied`,msg:t,p:4})}}
+function onNudgesOut(){S.nOut.forEach(n=>{if(n.reply&&!seenReply.has(n.id)){seenReply.add(n.id);if(nudgeOutInit)bigAlert({ic:'💬',bg:'var(--acc)',title:`${plain(n.to)} replied`,sub:'“'+n.reply+'”',close:'OK'})}});nudgeOutInit=true}
+
+/* ======================= transitions → notifications ======================= */
+let prevRooms=null,prevCooks=null;
+function onRoomsChange(){
+  if(prevRooms){for(const id of ['toilet','bath','washer']){
+    const was=prevRooms[id]||{},now=S.rooms[id]||{};
+    if(was.busy&&!now.busy){
+      if(was.by!==uid)toast(`✅ ${plain(was.by)} is done — ${ROOMS[id].name} is free`,5000);
+      const q=qFor(id),pos=q.findIndex(x=>x.uid===uid);
+      if(pos===0)bigAlert({ic:ROOMS[id].ic,title:`${ROOMS[id].name} is free!`,sub:`${plain(was.by)} just finished. You’re first in line.`,chips:[{t:ROOMS[id].kind==='washer'?'Start my wash':'Take it now',fn:()=>ROOMS[id].kind==='washer'?washSheet():claim(id)}],close:'Later'});
+      else if(pos>0)toast(`${ROOMS[id].name} is free — ${plain(q[0].uid)} is first in line, you’re #${pos+1}`,5000);
+    }else if(!was.busy&&now.busy&&now.by!==uid){toast(`${ROOMS[id].ic} ${plain(now.by)} is now in the ${ROOMS[id].name.toLowerCase()}`)}
+  }}
+  prevRooms=JSON.parse(JSON.stringify(S.rooms));
+}
+function onCooksChange(){
+  if(prevCooks){const before=4-Object.values(prevCooks).reduce((n,c)=>n+(c.burners?.length||0),0),after=4-Object.keys(usedBurners()).length;
+    for(const id in prevCooks)if(!S.cooks[id]&&id!==uid)toast(`🍳 ${plain(id)} finished cooking — ${after} burner${after===1?'':'s'} free`,5000);
+    for(const id in S.cooks)if(!prevCooks[id]&&id!==uid)toast(`🔥 ${plain(id)} started cooking (${S.cooks[id].burners.length} burner${S.cooks[id].burners.length>1?'s':''})`);
+    if(before===0&&after>0&&qFor('kitchen')[0]?.uid===uid)bigAlert({ic:'🍳',title:'A burner is free!',sub:`${after} burner${after>1?'s':''} free now. You were first in line.`,chips:[{t:'Use burners',fn:()=>kitchenSheet()}],close:'Later'});
+  }
+  prevCooks=JSON.parse(JSON.stringify(S.cooks));
+}
+const fired=new Set(JSON.parse(store.get('fired')||'[]'));
+function fireOnce(k,fn){if(fired.has(k))return;fired.add(k);store.set('fired',JSON.stringify([...fired].slice(-60)));fn()}
+function tick(){const now=Date.now();
+  const w=S.rooms.washer;if(w?.busy&&w.by===uid&&now>=w.until)fireOnce('wash'+w.since,()=>bigAlert({ic:'🧺',title:'Your laundry is done!',sub:'Please take it out so others can use the machine.',chips:[{t:'I took it out ✔',fn:()=>release('washer')}],close:'Later'}));
+  S.bookings.filter(b=>b.uid===uid&&b.start<=now&&now<b.end).forEach(b=>fireOnce('bk'+b.id,()=>{const d=S.rooms.bath;
+    if(d?.busy&&d.by!==uid)bigAlert({ic:'📅',bg:'#e8590c',title:'Your bath slot started',sub:`${plain(d.by)} is still inside.`,chips:[{t:'⚡ Message them',fn:()=>nudgeSheet('bath',d.by)}],close:'Wait'});
+    else if(!d?.busy)bigAlert({ic:'🛁',title:'Your bath slot starts now',sub:`${hm(b.start)}–${hm(b.end)}`,chips:[{t:'I’m going in',fn:()=>claim('bath')}],close:'Later'})}));
+  const c=S.cooks[uid];if(c&&now>c.until)fireOnce('ck'+c.until,()=>toast('⏰ Your kitchen time is up — tap Done or +15 min',6000));
+  renderRooms();renderQuiet();
+}
+
+/* ======================= activity feed ======================= */
+function renderActivity(){
+  const items=[...S.sessions].sort((a,b)=>b.end-a.end).slice(0,8).map(s=>({e:ROOMS[s.room]?.ic||'•',t:`<b>${you(s.uid)}</b> ${ROOMS[s.room]?.verb||''}${s.room==='kitchen'?` (${s.burners||1} burner${(s.burners||1)>1?'s':''})`:''}`,s:`${dur(s.end-s.start)} · finished ${ago(s.end)}${s.forcedBy?' · marked free by '+esc(plain(s.forcedBy)):''}`}));
+  $('activity').innerHTML=items.length?items.map(i=>`<div class="it"><div class="e">${i.e}</div><div class="t">${i.t}<small>${i.s}</small></div></div>`).join(''):'<div class="empty" style="padding:8px">Nothing yet this week.</div>';
+}
+
+/* ======================= votes & complaints ======================= */
+document.querySelectorAll('#kindSeg button').forEach(b=>b.onclick=()=>{postKind=b.dataset.k;document.querySelectorAll('#kindSeg button').forEach(x=>x.classList.toggle('on',x===b));$('fPoll').style.display=postKind==='poll'?'':'none';$('fComp').style.display=postKind==='poll'?'none':'';$('postBtn').textContent=postKind==='poll'?'Send to everyone':'Post complaint'});
+document.querySelectorAll('#feedSeg button').forEach(b=>b.onclick=()=>{feedFilter=b.dataset.f;document.querySelectorAll('#feedSeg button').forEach(x=>x.classList.toggle('on',x===b));renderFeed()});
+$('postBtn').onclick=async()=>{let doc;
+  if(postKind==='poll'){const q=$('pQ').value.trim();if(!q)return toast('Type your question first');let o=$('pO').value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,8);if(o.length<2)o=['Yes','No'];doc={type:'poll',text:q,options:o}}
+  else{const t=$('cT').value.trim();if(!t)return toast('Describe the problem first');doc={type:'complaint',text:t,target:$('cAbout').value,anon:$('cAnon').checked,options:['👍 Agree']}}
+  Object.assign(doc,{by:uid,at:Date.now(),closed:false});
+  if(await safe(()=>db.collection('polls').add(doc))){push('flat',doc.type==='poll'?{title:`🗳️ ${plain(uid)} asks everyone`,msg:doc.text+' — vote in the app',p:3}:{title:'⚠️ New complaint'+(doc.target==='house'?'':' about '+plain(doc.target)),msg:(doc.anon?'':plain(uid)+': ')+doc.text,p:3});$('pQ').value='';$('cT').value='';$('cAnon').checked=false;$('pO').value='Yes, No';toast('Sent to everyone ✔')}};
+const votesFor=pid=>S.votes.filter(v=>v.poll===pid);
+function postHTML(p){
+  const vs=votesFor(p.id),mine=vs.find(v=>v.uid===uid),tot=vs.length;
+  const author=p.type==='complaint'&&p.anon?(p.by===uid?'You (anonymous)':'Anonymous'):you(p.by);
+  const about=p.type==='complaint'?` · about <b>${p.target==='house'?'the whole flat':you(p.target)}</b>`:'';
+  const opts=p.options.map((o,i)=>{const w=vs.filter(v=>v.choice===i),pct=tot?Math.round(w.length/tot*100):0;
+    return `<button class="opt ${mine&&mine.choice===i?'mine':''}" data-vote="${p.id}" data-i="${i}" ${p.closed?'disabled':''}><span class="bar" style="width:${p.type==='poll'?pct:Math.min(100,w.length*14)}%"></span><span class="in"><span>${esc(o)}</span><b>${w.length}${p.type==='poll'?' · '+pct+'%':''}</b></span>${w.length?`<div class="who">${w.map(v=>esc(nm(v.uid))).join(', ')}</div>`:''}</button>`}).join('');
+  const own=p.by===uid;
+  return `<div class="card post ${p.type==='complaint'?'c':''} ${p.closed?'closed':''}"><div class="meta">${p.type==='complaint'?'⚠️ Complaint':'🗳️ Question'} · ${author}${about} · ${ago(p.at)}${p.closed?' · <b>'+(p.type==='complaint'?'resolved':'closed')+'</b>':''}</div><div class="txt">${esc(p.text)}</div>${opts}<div class="row" style="justify-content:flex-end">${(own||(p.type==='complaint'&&p.target===uid))&&!p.closed?`<button class="lnk" data-close="${p.id}">${p.type==='complaint'?'Mark resolved':'Close voting'}</button>`:''}${own?`<button class="lnk" data-del="${p.id}">Delete</button>`:''}</div></div>`;
+}
+function renderFeed(){
+  const list=S.polls.filter(p=>feedFilter==='all'||!p.closed);
+  $('feed').innerHTML=list.length?list.map(postHTML).join(''):'<div class="empty">Nothing here yet.</div>';
+  const open=S.polls.filter(p=>!p.closed).slice(0,3);
+  $('homeFeed').innerHTML=open.length?open.map(postHTML).join(''):'<div class="card empty">No open questions or complaints 🎉</div>';
+  renderBadge();
+}
+let prevPollIds=null;
+function onPollsChange(){const ids=new Set(S.polls.map(p=>p.id));if(prevPollIds)S.polls.filter(p=>!prevPollIds.has(p.id)&&p.by!==uid).forEach(p=>toast(p.type==='complaint'?(p.target===uid?'⚠️ New complaint about you':'⚠️ New complaint posted'):`🗳️ ${p.anon?'Someone':plain(p.by)} asks: ${p.text.slice(0,50)}`,5000));prevPollIds=ids}
+function renderBadge(){const n=S.polls.filter(p=>!p.closed&&p.by!==uid&&p.at>lastSeen&&!votesFor(p.id).some(v=>v.uid===uid)).length;$('talkBadge').style.display=n?'':'none';$('talkBadge').textContent=n}
+document.addEventListener('click',async e=>{
+  const v=e.target.closest('[data-vote]');
+  if(v){const pid=v.dataset.vote,i=+v.dataset.i,ref=db.doc('votes/'+pid+'__'+uid),cur=votesFor(pid).find(x=>x.uid===uid);
+    if(cur&&cur.choice===i)await safe(()=>ref.delete());else await safe(()=>ref.set({poll:pid,uid,choice:i,at:Date.now()}));return}
+  const c=e.target.closest('[data-close]');if(c){await safe(()=>db.doc('polls/'+c.dataset.close).update({closed:true}));return}
+  const d=e.target.closest('[data-del]');if(d){const id=d.dataset.del;confirmSheet('Delete this post?','Votes on it will be removed too.','Delete','b-busy',()=>safe(async()=>{await db.doc('polls/'+id).delete();for(const x of votesFor(id))await db.doc('votes/'+x.id).delete()}));return}
+  const g=e.target.closest('[data-delguest]');if(g){const id=g.dataset.delguest;confirmSheet('Remove guest notice?','','Remove','b-busy',()=>safe(()=>db.doc('guests/'+id).delete()))}
+});
+
+/* ======================= members ======================= */
+function renderMembers(){
+  const ids=Object.keys(S.members);
+  const cur=$('cAbout').value;
+  $('cAbout').innerHTML=`<option value="house">🏠 The whole flat / general</option>`+ids.filter(i=>i!==uid).map(i=>`<option value="${esc(i)}">${esc(nm(i))}</option>`).join('');
+  if(cur)$('cAbout').value=cur;
+  $('memList').innerHTML=ids.length?ids.map(i=>esc(nm(i))+(i===uid?' (you)':'')).join('<br>'):'Nobody has joined yet.';
+  $('meBtn').textContent=S.members[uid]?nm(uid):'Set your name';
+  const m=S.members[uid];if(m&&!$('myName').matches(':focus')){$('myName').value=m.name;$('myEmoji').value=m.emoji||''}
+}
+$('meBtn').onclick=()=>show('set');
+$('saveMe').onclick=async()=>{const n=$('myName').value.trim();if(!n)return toast('Enter a name');if(await safe(()=>db.doc('members/'+uid).set({name:n.slice(0,20),emoji:$('myEmoji').value.trim().slice(0,4),joined:S.members[uid]?.joined||Date.now()})))toast('Saved ✔')};
+function askName(def){
+  openSheet(`<h3>👋 Welcome to ${esc(APP)}</h3><p class="note">What should your flatmates call you?</p><div class="row"><input type="text" id="nN" maxlength="20" value="${esc(def)}" aria-label="Name"><input type="text" id="nE" maxlength="4" placeholder="😀" style="width:70px;text-align:center" aria-label="Emoji"></div><button class="big b-acc" style="width:100%;margin-top:12px" id="nGo">Join the flat</button>`);
+  $('nGo').onclick=async()=>{const n=$('nN').value.trim();if(!n)return;if(await safe(()=>db.doc('members/'+uid).set({name:n.slice(0,20),emoji:$('nE').value.trim().slice(0,4),joined:Date.now()})))closeSheet()};
+}
+
+/* ======================= stats ======================= */
+async function rangeQuery(col,field,from,to){
+  const out=[];for(let a=from;a<to;a+=7*DAY){const b=Math.min(to,a+7*DAY);const s=await db.collection(col).where(field,'>=',a).where(field,'<',b).limit(1000).get();s.docs.forEach(d=>out.push({id:d.id,...d.data()}))}return out}
+async function gather(from,to){
+  const [sess,polls,nudges,books,guests,votes]=await Promise.all([rangeQuery('sessions','end',from,to),rangeQuery('polls','at',from,to),rangeQuery('nudges','at',from,to),rangeQuery('bookings','start',from,to),db.collection('guests').limit(500).get().then(s=>s.docs.map(d=>({id:d.id,...d.data()}))),rangeQuery('votes','at',from,to)]);
+  return {from,to,sess,polls,nudges,books,guests,votes};
+}
+function compute(G){
+  const ids=new Set(Object.keys(S.members));G.sess.forEach(s=>ids.add(s.uid));
+  const P={};const blank=()=>({wcN:0,wcM:0,bathN:0,bathM:0,kitN:0,kitM:0,burnH:0,washN:0,booked:0,guestN:0,nSent:0,nGot:0,comp:0,posted:0,voted:0});
+  ids.forEach(i=>P[i]=blank());const g=i=>P[i]||(P[i]=blank());
+  G.sess.forEach(s=>{const p=g(s.uid),m=s.mins||0;if(s.room==='toilet'){p.wcN++;p.wcM+=m}else if(s.room==='bath'){p.bathN++;p.bathM+=m}else if(s.room==='kitchen'){p.kitN++;p.kitM+=m;p.burnH+=m*(s.burners||1)/60}else if(s.room==='washer')p.washN++});
+  G.polls.forEach(p=>{g(p.by).posted++;if(p.type==='complaint'&&p.target&&p.target!=='house'&&P[p.target])P[p.target].comp++});
+  G.votes.forEach(v=>{if(P[v.uid])P[v.uid].voted++});
+  G.nudges.forEach(n=>{g(n.from).nSent++;if(P[n.to])P[n.to].nGot++});
+  G.books.forEach(b=>g(b.uid).booked++);
+  G.guests.forEach(x=>{const n=nightsBetween(x.from,x.to,G.from,G.to);if(n&&P[x.uid])P[x.uid].guestN+=n});
+  const days=Math.max(1,Math.min(Math.ceil((G.to-G.from)/DAY),Math.ceil((Date.now()-G.from)/DAY)));
+  return {rows:[...ids].map(id=>({id,...P[id]})),days};
+}
+function renderWeekSeg(){$('weekSeg').innerHTML=[0,-1,-2,-3].map(w=>`<button data-w="${w}" class="${w===statWeek?'on':''}">${w===0?'This week':w===-1?'Last week':'Wk of '+new Date(weekStart(w)).toLocaleDateString([],{day:'numeric',month:'short'})}</button>`).join('')}
+$('weekSeg').onclick=e=>{const b=e.target.closest('button');if(!b)return;statWeek=+b.dataset.w;renderStats()};
+let statSeq=0,statTimer=null;
+const statsDebounced=()=>{clearTimeout(statTimer);statTimer=setTimeout(()=>{if($('v-stats').classList.contains('on'))renderStats()},1500)};
+async function renderStats(){
+  renderWeekSeg();if(!db)return;const seq=++statSeq,w=statWeek;
+  let G;try{G=await gather(weekStart(w),weekStart(w+1))}catch(e){console.error(e);$('hl').innerHTML='<div class="card empty" style="grid-column:1/-1">Could not load stats — try again.</div>';return}
+  if(seq!==statSeq)return;
+  const {rows,days}=compute(G);
+  const top=(f,lab,fmt)=>{const r=[...rows].sort((a,b)=>f(b)-f(a))[0];return r&&f(r)>0?`<div class="card"><div class="k">${lab}</div><div class="v">${esc(nm(r.id))}</div><div class="s">${fmt(f(r))}</div></div>`:''};
+  $('hl').innerHTML=(top(r=>r.wcM,'🚽 Most washroom time',v=>Math.round(v)+' min')+top(r=>r.bathM,'🛁 Longest baths',v=>Math.round(v)+' min total')+top(r=>r.burnH,'🍳 Kitchen champ',v=>r1(v)+' burner-hours')+top(r=>r.washN,'🧺 Most laundry',v=>v+' load'+(v>1?'s':''))+top(r=>r.guestN,'👥 Most guests',v=>v+' night'+(v>1?'s':''))+top(r=>r.nGot,'⚡ Most hurried',v=>v+' urgent msg'+(v>1?'s':''))+top(r=>r.comp,'⚠️ Most complaints',v=>v+' complaint'+(v>1?'s':'')))||'<div class="card empty" style="grid-column:1/-1">No activity recorded for this week yet.</div>';
+  const mx=Math.max(1,...rows.map(r=>r.wcM+r.bathM));
+  $('bars').innerHTML=[...rows].sort((a,b)=>(b.wcM+b.bathM)-(a.wcM+a.bathM)).map(r=>`<div class="b"><span>${esc(plain(r.id))}</span><span class="t"><i style="width:${(r.wcM+r.bathM)/mx*100}%"></i></span><span style="text-align:right">${Math.round(r.wcM+r.bathM)} m</span></div>`).join('')||'<div class="empty">—</div>';
+  $('tbl').innerHTML=`<tr><th>Flatmate</th><th>🚽 visits</th><th>🚽 /day</th><th>🚽 avg min</th><th>🛁 baths</th><th>🛁 avg min</th><th>🍳 time</th><th>🔥 burner-h</th><th>🧺 loads</th><th>📅 bookings</th><th>👥 guest nights</th><th>⚡ sent/got</th><th>⚠️ complaints</th></tr>`+
+   rows.map(r=>`<tr><td>${esc(nm(r.id))}</td><td>${r.wcN}</td><td>${r1(r.wcN/days)}</td><td>${r.wcN?r1(r.wcM/r.wcN):'–'}</td><td>${r.bathN}</td><td>${r.bathN?r1(r.bathM/r.bathN):'–'}</td><td>${r.kitM?dur(r.kitM*MIN):'–'}</td><td>${r.burnH?r1(r.burnH):'–'}</td><td>${r.washN||'–'}</td><td>${r.booked||'–'}</td><td>${r.guestN||'–'}</td><td>${r.nSent||r.nGot?r.nSent+'/'+r.nGot:'–'}</td><td>${r.comp||'–'}</td></tr>`).join('');
+}
+
+/* ======================= PDF reports ======================= */
+let pdfLibP=null;
+function loadPdfLib(){return pdfLibP||(pdfLibP=new Promise((res,rej)=>{if(window.PDFLib)return res();const srcs=['pdf-lib.min.js','https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js','https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'];
+  const tryN=i=>{if(i>=srcs.length){pdfLibP=null;return rej(new Error('pdf-lib'))}const s=document.createElement('script');s.src=srcs[i];s.onload=()=>window.PDFLib?res():tryN(i+1);s.onerror=()=>{s.remove();tryN(i+1)};document.head.appendChild(s)};tryN(0)}))}
+const pdfTxt=s=>String(s??'').replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,'-').replace(/…/g,'...').replace(/→/g,'->').replace(/[^\x20-\x7E -ÿ]/g,'').replace(/\s+/g,' ').trim();
+const pName=id=>pdfTxt(plain(id))||'Someone';
+class Pdf{
+  async init(title,subtitle){const L=PDFLib;this.L=L;this.doc=await L.PDFDocument.create();this.doc.setTitle(title);this.doc.setCreator(APP);
+    this.f=await this.doc.embedFont(L.StandardFonts.Helvetica);this.b=await this.doc.embedFont(L.StandardFonts.HelveticaBold);
+    this.W=842;this.H=595;this.M=34;this.n=0;this.title=title;this.newPage();
+    this.p.drawRectangle({x:0,y:this.H-78,width:this.W,height:78,color:L.rgb(.114,.106,.094)});
+    this.p.drawText(pdfTxt(title),{x:this.M,y:this.H-42,size:22,font:this.b,color:L.rgb(1,1,1)});
+    this.p.drawText(pdfTxt(subtitle),{x:this.M,y:this.H-62,size:11,font:this.f,color:L.rgb(.8,.8,.8)});
+    this.y=this.H-100;return this}
+  newPage(){this.p=this.doc.addPage([this.W,this.H]);this.n++;this.y=this.H-this.M;
+    this.p.drawText(`${APP} - ${pdfTxt(this.title)} - page ${this.n}`,{x:this.M,y:16,size:8,font:this.f,color:this.L.rgb(.5,.5,.5)})}
+  need(h){if(this.y-h<this.M+10)this.newPage()}
+  h(t,size=14){this.need(size+14);this.y-=size+6;this.p.drawText(pdfTxt(t),{x:this.M,y:this.y,size,font:this.b,color:this.L.rgb(.114,.106,.094)});this.y-=6}
+  line(t,{size=10,bold=false,color}={}){for(const l of this.wrap(pdfTxt(t),this.W-2*this.M,size,bold?this.b:this.f)){this.need(size+4);this.y-=size+4;this.p.drawText(l,{x:this.M,y:this.y,size,font:bold?this.b:this.f,color:color||this.L.rgb(.2,.2,.2)})}}
+  wrap(t,w,size,font){const words=t.split(' '),out=[];let cur='';for(const wd of words){const tryS=cur?cur+' '+wd:wd;if(font.widthOfTextAtSize(tryS,size)<=w)cur=tryS;else{if(cur)out.push(cur);cur=wd;while(font.widthOfTextAtSize(cur,size)>w&&cur.length>1){let k=cur.length;while(k>1&&font.widthOfTextAtSize(cur.slice(0,k),size)>w)k--;out.push(cur.slice(0,k));cur=cur.slice(k)}}}if(cur)out.push(cur);return out.length?out:['']}
+  table(cols,rows,{size=9}={}){const L=this.L,tw=this.W-2*this.M,tot=cols.reduce((a,c)=>a+(c.w||1),0),ws=cols.map(c=>(c.w||1)/tot*tw),pad=4;
+    const head=()=>{this.need(20);const hh=Math.max(...cols.map((c,i)=>this.wrap(pdfTxt(c.t),ws[i]-2*pad,size-.5,this.b).length))*(size+2)+8;
+      this.p.drawRectangle({x:this.M,y:this.y-hh,width:tw,height:hh,color:L.rgb(.93,.92,.89)});let x=this.M;
+      cols.forEach((c,i)=>{this.wrap(pdfTxt(c.t),ws[i]-2*pad,size-.5,this.b).forEach((l,j)=>{const lw=this.b.widthOfTextAtSize(l,size-.5);this.p.drawText(l,{x:c.left?x+pad:x+ws[i]-pad-lw,y:this.y-size-3-j*(size+2),size:size-.5,font:this.b,color:L.rgb(.3,.3,.3)})});x+=ws[i]});this.y-=hh};
+    head();
+    rows.forEach((r,ri)=>{const cells=r.map((v,i)=>this.wrap(pdfTxt(v),ws[i]-2*pad,size,i===0?this.b:this.f));const rh=Math.max(...cells.map(c=>c.length))*(size+2)+7;
+      if(this.y-rh<this.M+10){this.newPage();head()}
+      if(ri%2)this.p.drawRectangle({x:this.M,y:this.y-rh,width:tw,height:rh,color:L.rgb(.975,.97,.96)});
+      let x=this.M;cells.forEach((ls,i)=>{ls.forEach((l,j)=>{const font=i===0?this.b:this.f,lw=font.widthOfTextAtSize(l,size);this.p.drawText(l,{x:cols[i].left?x+pad:x+ws[i]-pad-lw,y:this.y-size-2-j*(size+2),size,font,color:L.rgb(.15,.15,.15)})});x+=ws[i]});
+      this.y-=rh;this.p.drawLine({start:{x:this.M,y:this.y},end:{x:this.M+tw,y:this.y},thickness:.4,color:L.rgb(.88,.86,.82)})});
+    this.y-=10}
+  gap(h=8){this.y-=h}
+  async bytes(){return await this.doc.save()}
+}
+const SUM_COLS=[{t:'Flatmate',w:1.7,left:1},{t:'WC visits'},{t:'WC /day'},{t:'WC min'},{t:'WC avg'},{t:'Baths'},{t:'Bath min'},{t:'Kitchen h'},{t:'Burner-h'},{t:'Laundry'},{t:'Bath bookings'},{t:'Guest nights'},{t:'Urgent sent/got'},{t:'Complaints got'},{t:'Posts/votes'}];
+const sumRow=(r,days)=>[pName(r.id),r.wcN,r1(r.wcN/days),Math.round(r.wcM),r.wcN?r1(r.wcM/r.wcN):'-',r.bathN,Math.round(r.bathM),r1(r.kitM/60),r1(r.burnH),r.washN,r.booked,r.guestN,r.nSent+'/'+r.nGot,r.comp,r.posted+'/'+r.voted];
+function highlights(rows){const out=[];const t=(f,l,fmt)=>{const r=[...rows].sort((a,b)=>f(b)-f(a))[0];if(r&&f(r)>0)out.push(`${l}: ${pName(r.id)} (${fmt(f(r))})`)};
+  t(r=>r.wcM,'Most washroom time',v=>Math.round(v)+' min');t(r=>r.bathM,'Longest baths',v=>Math.round(v)+' min');t(r=>r.burnH,'Kitchen champ',v=>r1(v)+' burner-hours');t(r=>r.washN,'Most laundry',v=>v+' loads');t(r=>r.guestN,'Most guest nights',v=>v);t(r=>r.nGot,'Most urgent messages received',v=>v);t(r=>r.comp,'Most complaints received',v=>v);return out}
+function complaintsBlock(pdf,G){const cs=G.polls.filter(p=>p.type==='complaint');if(!cs.length)return;
+  pdf.h('Complaints',13);pdf.table([{t:'Date',left:1},{t:'About',w:1.3,left:1},{t:'Posted by',w:1.2,left:1},{t:'Complaint',w:5,left:1},{t:'Agree'},{t:'Status',left:1}],
+    cs.sort((a,b)=>a.at-b.at).map(p=>[dshort(p.at),p.target==='house'?'Whole flat':pName(p.target),p.anon?'Anonymous':pName(p.by),p.text,G.votes.filter(v=>v.poll===p.id).length,p.closed?'Resolved':'Open']))}
+function pollsBlock(pdf,G){const ps=G.polls.filter(p=>p.type==='poll');if(!ps.length)return;
+  pdf.h('Questions & votes',13);pdf.table([{t:'Date',left:1},{t:'Asked by',w:1.2,left:1},{t:'Question',w:4,left:1},{t:'Result',w:3,left:1}],
+    ps.sort((a,b)=>a.at-b.at).map(p=>{const vs=G.votes.filter(v=>v.poll===p.id);return[dshort(p.at),pName(p.by),p.text,p.options.map((o,i)=>`${o}: ${vs.filter(v=>v.choice===i).length}`).join(', ')]}))}
+async function weeklyPdf(){
+  const from=weekStart(statWeek),to=weekStart(statWeek+1);
+  const G=await gather(from,to),{rows,days}=compute(G);await loadPdfLib();
+  const pdf=await new Pdf().init('Weekly report',`${APP}  |  Week of ${dshort(from)} - ${dshort(to-1)} ${new Date(from).getFullYear()}  |  generated ${new Date().toLocaleString()}`);
+  pdf.h('Summary',13);pdf.table(SUM_COLS,rows.map(r=>sumRow(r,days)));
+  const hl=highlights(rows);if(hl.length){pdf.h('Highlights',13);hl.forEach(l=>pdf.line('- '+l))}
+  pdf.gap();complaintsBlock(pdf,G);pollsBlock(pdf,G);
+  pdf.h('What each person did',15);
+  for(const r of rows){
+    const ev=[];
+    G.sess.filter(s=>s.uid===r.id).forEach(s=>ev.push([s.start,{toilet:'Washroom',bath:'Bath',kitchen:`Kitchen (${s.burners||1} burner${(s.burners||1)>1?'s':''})`,washer:'Laundry load'}[s.room]||s.room,`${hm(s.start)} - ${hm(s.end)}`,dur(s.end-s.start)+(s.forcedBy?' (marked free by '+pName(s.forcedBy)+')':'')]));
+    G.books.filter(b=>b.uid===r.id).forEach(b=>ev.push([b.start,'Booked bath slot',`${hm(b.start)} - ${hm(b.end)}`,'']));
+    G.nudges.filter(n=>n.from===r.id).forEach(n=>ev.push([n.at,`Urgent msg to ${pName(n.to)}`,hm(n.at),`"${n.text}"${n.reply?' -> "'+n.reply+'"':' (no reply)'}`]));
+    G.guests.filter(g=>g.uid===r.id&&nightsBetween(g.from,g.to,from,to)).forEach(g=>ev.push([Math.max(g.from,from),`Guest: ${g.guest}`,`${dshort(g.from)} -> ${dshort(g.to)}`,`${nightsBetween(g.from,g.to,from,to)} night(s) this week`]));
+    ev.sort((a,b)=>a[0]-b[0]);
+    pdf.h(`${pName(r.id)}  -  ${r.wcN} washroom visits, ${r.bathN} baths, ${r1(r.kitM/60)} h kitchen, ${r.washN} laundry, ${r.comp} complaints`,11.5);
+    if(!ev.length){pdf.line('No activity recorded.',{color:PDFLib.rgb(.5,.5,.5)});pdf.gap();continue}
+    pdf.table([{t:'Day',left:1},{t:'Activity',w:2.2,left:1},{t:'Time',w:1.3,left:1},{t:'Details',w:4,left:1}],ev.map(e=>[dshort(e[0]),e[1],e[2],e[3]]),{size:8.5});
+  }
+  await savePdf(pdf,`${fileSlug()}-week-${ymd(from)}.pdf`);
+}
+
+const ym=t=>ymd(t).slice(0,7);
+const fileSlug=()=>APP.normalize('NFD').replace(/[^A-Za-z0-9]+/g,'')||'FlatHub';
+async function buildMonthSnap(off){
+  const from=monthStart(off),to=monthStart(off+1),G=await gather(from,to),{rows,days}=compute(G);
+  const names={};rows.forEach(r=>names[r.id]=plain(r.id));
+  const weeks=[];for(let w=weekStart(0,from);w<to;w+=7*DAY)weeks.push(Math.max(w,from));
+  const inW=(x,w)=>{const e=weekStart(0,w)+7*DAY;return x.end>=w&&x.end<Math.min(e,to)};
+  const wk=f=>Object.fromEntries(rows.map(r=>[r.id,weeks.map(w=>f(G.sess.filter(x=>x.uid===r.id&&inW(x,w))))]));
+  const agree=id=>G.votes.filter(v=>v.poll===id);
+  return {month:ym(from),label:new Date(from).toLocaleDateString([],{month:'long',year:'numeric'}),from,to,days,final:to<=Date.now(),generatedAt:Date.now(),names,
+    rows:rows.map(r=>{const o={...r};for(const k in o)if(typeof o[k]==='number')o[k]=r1(o[k]);return o}),weeks,
+    wkWc:wk(s=>Math.round(s.filter(x=>x.room==='toilet'||x.room==='bath').reduce((a,x)=>a+(x.mins||0),0))),
+    wkBurn:wk(s=>r1(s.filter(x=>x.room==='kitchen').reduce((a,x)=>a+(x.mins||0)*(x.burners||1)/60,0))),
+    wkWash:wk(s=>s.filter(x=>x.room==='washer').length),
+    complaints:G.polls.filter(p=>p.type==='complaint').sort((a,b)=>a.at-b.at).map(p=>({at:p.at,about:p.target==='house'?'Whole flat':plain(p.target),by:p.anon?'Anonymous':plain(p.by),text:p.text,agree:agree(p.id).length,closed:!!p.closed})),
+    polls:G.polls.filter(p=>p.type==='poll').sort((a,b)=>a.at-b.at).map(p=>({at:p.at,by:plain(p.by),text:p.text,result:p.options.map((o,i)=>`${o}: ${agree(p.id).filter(v=>v.choice===i).length}`).join(', ')})),
+    guests:G.guests.filter(g=>nightsBetween(g.from,g.to,from,to)).map(g=>({host:plain(g.uid),guest:g.guest,from:g.from,to:g.to,n:nightsBetween(g.from,g.to,from,to)})),
+    hasData:!!(G.sess.length||G.polls.length||G.nudges.length)};
+}
+async function saveMonth(off,force=false){
+  const from=monthStart(off),ref=db.doc('reports/'+ym(from)),s=await ref.get(),d=s.exists?s.data():null;
+  const need=force||(off<0?(!d||!d.final):(!d||Date.now()-d.generatedAt>20*36e5));
+  if(!need)return d;
+  const l=await ref.acquire({holder:uid,ttlMs:20000});if(!l.acquired)return d;
+  const snap=await buildMonthSnap(off);if(!snap.hasData&&!d)return null;
+  await ref.set(snap);return snap;
+}
+async function autoArchive(){if(!canWrite)return;for(const off of [-3,-2,-1,0]){try{await saveMonth(off)}catch(e){console.error(e)}}}
+function renderReports(){
+  $('repList').innerHTML=S.reports.length?S.reports.map(r=>`<div class="it"><div class="e">📄</div><div class="t"><b>${esc(r.label)}</b><small>${r.final?'Complete month · saved '+dshort(r.generatedAt):'This month so far · updated '+ago(r.generatedAt)}</small></div>${r.final?'':`<button class="lnk" data-reprefresh="1">Update</button>`}<button class="big b-acc" data-rep="${esc(r.month)}">⬇ PDF</button></div>`).join('')
+    :'<div class="empty" style="padding:8px">The first report is saved automatically once there is some activity.</div>';
+}
+$('repList').onclick=async e=>{
+  const b=e.target.closest('[data-rep]');if(b){const r=S.reports.find(x=>x.month===b.dataset.rep);if(r)runReport(b,async()=>{let snap=r;if(!r.final&&canWrite){try{snap=await saveMonth(0,true)||r}catch(err){}}await monthPdfFromSnap(snap)});return}
+  const u=e.target.closest('[data-reprefresh]');if(u){u.textContent='Updating…';try{await saveMonth(0,true);toast('Report updated ✔')}catch(err){toast('Could not update — try again')}}
+};
+async function monthPdfFromSnap(R){
+  await loadPdfLib();const N=id=>pdfTxt(R.names[id]||'Someone')||'Someone';
+  const pdf=await new Pdf().init('Monthly report - '+R.label,`${APP}  |  ${dshort(R.from)} - ${dshort(R.to-1)}  |  ${R.days} day(s) counted  |  ${R.final?'complete month':'month so far'}  |  saved ${new Date(R.generatedAt).toLocaleString()}`);
+  pdf.h('Everyone combined',13);pdf.table(SUM_COLS,R.rows.map(r=>sumRow(r,R.days).map((v,i)=>i===0?N(r.id):v)));
+  const tot=k=>R.rows.reduce((a,r)=>a+(r[k]||0),0);
+  pdf.line(`Whole flat: ${tot('wcN')} washroom visits (${Math.round(tot('wcM'))} min), ${tot('bathN')} baths (${Math.round(tot('bathM'))} min), ${r1(tot('kitM')/60)} h of cooking (${r1(tot('burnH'))} burner-hours), ${tot('washN')} laundry loads, ${tot('booked')} bath bookings, ${tot('guestN')} guest nights, ${tot('nSent')} urgent messages, ${R.complaints.length} complaints, ${R.polls.length} questions.`,{bold:true});
+  pdf.gap();
+  const hl2=[];const t=(f,l,fmt)=>{const r=[...R.rows].sort((a,b)=>f(b)-f(a))[0];if(r&&f(r)>0)hl2.push(`${l}: ${N(r.id)} (${fmt(f(r))})`)};
+  t(r=>r.wcM,'Most washroom time',v=>Math.round(v)+' min');t(r=>r.bathM,'Longest baths',v=>Math.round(v)+' min');t(r=>r.burnH,'Kitchen champ',v=>r1(v)+' burner-hours');t(r=>r.washN,'Most laundry',v=>v+' loads');t(r=>r.guestN,'Most guest nights',v=>v);t(r=>r.nGot,'Most urgent messages received',v=>v);t(r=>r.comp,'Most complaints received',v=>v);
+  if(hl2.length){pdf.h('Highlights of the month',13);hl2.forEach(l=>pdf.line('- '+l))}
+  const wcols=[{t:'Flatmate',w:1.6,left:1},...R.weeks.map(w=>({t:'Wk '+dshort(w)})),{t:'Total'}];
+  const wt=(m,f=x=>x)=>R.rows.map(r=>{const a=m[r.id]||[];return[N(r.id),...a.map(f),f(r1(a.reduce((x,y)=>x+y,0)))]});
+  pdf.h('Washroom + bath minutes per week',13);pdf.table(wcols,wt(R.wkWc));
+  pdf.h('Kitchen burner-hours per week',13);pdf.table(wcols,wt(R.wkBurn));
+  pdf.h('Laundry loads per week',13);pdf.table(wcols,wt(R.wkWash));
+  pdf.h('Average per day',13);pdf.table([{t:'Flatmate',w:1.6,left:1},{t:'WC visits/day'},{t:'WC min/day'},{t:'Bath min/day'},{t:'Kitchen min/day'}],R.rows.map(r=>[N(r.id),r1(r.wcN/R.days),r1(r.wcM/R.days),r1(r.bathM/R.days),r1(r.kitM/R.days)]));
+  if(R.complaints.length){pdf.h('Complaints',13);pdf.table([{t:'Date',left:1},{t:'About',w:1.3,left:1},{t:'Posted by',w:1.2,left:1},{t:'Complaint',w:5,left:1},{t:'Agree'},{t:'Status',left:1}],R.complaints.map(c=>[dshort(c.at),c.about,c.by,c.text,c.agree,c.closed?'Resolved':'Open']))}
+  if(R.polls.length){pdf.h('Questions & votes',13);pdf.table([{t:'Date',left:1},{t:'Asked by',w:1.2,left:1},{t:'Question',w:4,left:1},{t:'Result',w:3,left:1}],R.polls.map(p=>[dshort(p.at),p.by,p.text,p.result]))}
+  if(R.guests.length){pdf.h('Guests',13);pdf.table([{t:'Host',left:1},{t:'Guest',left:1},{t:'From',left:1},{t:'To',left:1},{t:'Nights in month'}],R.guests.map(g=>[g.host,g.guest,dshort(g.from),dshort(g.to),g.n]))}
+  await savePdf(pdf,`${fileSlug()}-month-${R.month}.pdf`);
+}
+
+/* ======================= who's home ======================= */
+function renderPresence(){
+  const me=S.presence[uid],ids=Object.keys(S.members),n=ids.filter(i=>S.presence[i]?.home).length;
+  $('homeBar').innerHTML=(me?.home?`<button class="big b-busy" data-pres="0">🚪 I’m going out</button>`:`<button class="big b-free" data-pres="1">🏠 I’m home</button>`)+`<span class="note"><b style="color:var(--ink)">${n} of ${ids.length}</b> at home${me?.at?' · you: '+(me.home?'home':'out')+' since '+hm(me.at):''}</span>`;
+  $('ppl').innerHTML=ids.sort((a,b)=>(S.presence[b]?.home?1:0)-(S.presence[a]?.home?1:0)).map(i=>{const p=S.presence[i];return `<span class="${p?.home?'in':''}">${p?.home?'🏠':'🚶'} ${i===uid?'You':esc(nm(i))}${p?.at?' · '+hm(p.at):''}</span>`}).join('');
+}
+$('homeBar').onclick=async e=>{const b=e.target.closest('[data-pres]');if(!b)return;const home=b.dataset.pres==='1';if(await safe(()=>db.doc('presence/'+uid).set({home,at:Date.now()})))toast(home?'Everyone can see you’re home 🏠':'Marked as out 🚶')};
+let prevPres=null;
+function onPresence(){if(prevPres)for(const id in S.presence){if(id===uid)continue;const a=prevPres[id]?.home,b=S.presence[id]?.home;if(a!==b&&b!==undefined)toast(b?`🏠 ${plain(id)} is home`:`🚶 ${plain(id)} went out`)}prevPres=JSON.parse(JSON.stringify(S.presence))}
+
+/* ======================= chat ======================= */
+let openThread=null;const lastRead=JSON.parse(store.get('lastRead')||'{}');
+const tKey=o=>o==='all'?'all':[uid,o].sort().join('_');
+const other=t=>t==='all'?'all':t.split('_').find(x=>x!==uid)||uid;
+function tMsgs(t){if(t==='all')return [...S.msgAll].sort((a,b)=>a.at-b.at);const m=new Map();[...S.msgIn,...S.msgOut].forEach(x=>{if(x.thread===t)m.set(x.id,x)});return [...m.values()].sort((a,b)=>a.at-b.at)}
+const unread=t=>tMsgs(t).filter(m=>m.from!==uid&&m.at>(lastRead[t]||0)).length;
+function markRead(t){lastRead[t]=Date.now();store.set('lastRead',JSON.stringify(lastRead));renderThreads()}
+function renderThreads(){
+  if(!uid)return;
+  const ts=['all',...Object.keys(S.members).filter(i=>i!==uid).map(tKey)];
+  const last=t=>tMsgs(t).slice(-1)[0];
+  ts.sort((a,b)=>a==='all'?-1:b==='all'?1:(last(b)?.at||0)-(last(a)?.at||0));
+  $('threads').innerHTML=ts.map(t=>{const l=last(t),u=unread(t),o=other(t);const m=S.members[o];
+    return `<button class="th" data-th="${esc(t)}"><span class="av">${t==='all'?'📢':esc(m?.emoji||(m?.name||'?')[0].toUpperCase())}</span><span class="tx"><b>${t==='all'?'Everyone':esc(plain(o))}</b><small>${l?(l.from===uid?'You: ':t==='all'?esc(plain(l.from))+': ':'')+esc(l.text)+' · '+ago(l.at):t==='all'?'Message the whole flat':'Send a private message'}</small></span>${u?`<span class="un">${u}</span>`:''}</button>`}).join('');
+  const tot=ts.reduce((a,t)=>a+unread(t),0);$('chatBadge').style.display=tot?'':'none';$('chatBadge').textContent=tot;
+  if(openThread)renderMsgs();
+}
+$('threads').onclick=e=>{const b=e.target.closest('[data-th]');if(b)openChat(b.dataset.th)};
+function openChat(t){openThread=t;show('chat');$('chatList').style.display='none';$('chatThread').style.display='block';$('chatTitle').textContent=t==='all'?'📢 Everyone':nm(other(t));$('impRow').style.display=t==='all'?'flex':'none';$('impChk').checked=false;markRead(t);renderMsgs(true)}
+$('chatBack').onclick=()=>{openThread=null;$('chatThread').style.display='none';$('chatList').style.display='block';renderThreads()};
+function renderMsgs(scroll){const box=$('msgs'),atBottom=box.scrollHeight-box.scrollTop-box.clientHeight<80;let lastDay=0;
+  const ms=tMsgs(openThread);
+  box.innerHTML=ms.length?ms.map(m=>{const d=dayStart(m.at),sep=d!==lastDay?`<div class="day">${dshort(m.at)}</div>`:'';lastDay=d;
+    return sep+`<div class="msg ${m.from===uid?'me':''} ${m.imp?'imp':''}">${m.from!==uid&&openThread==='all'?`<span class="w">${esc(nm(m.from))}</span>`:''}${m.imp?'📢 ':''}${esc(m.text)}<span class="tm">${hm(m.at)}</span></div>`}).join(''):'<div class="empty">No messages yet — say hi 👋</div>';
+  if(scroll||atBottom)box.scrollTop=box.scrollHeight;
+  if($('v-chat').classList.contains('on')&&unread(openThread))markRead(openThread);
+}
+async function sendMsg(){const t=openThread,text=$('msgIn').value.trim();if(!t||!text)return;
+  const imp=t==='all'&&$('impChk').checked,to=other(t);const doc=t==='all'?{from:uid,text:text.slice(0,1000),at:Date.now(),imp}:{thread:t,from:uid,to,text:text.slice(0,1000),at:Date.now()};
+  $('msgIn').value='';if(!await safe(()=>db.collection(t==='all'?'chat_all':'dm').add(doc))){$('msgIn').value=text;return}$('impChk').checked=false;
+  if(t==='all')push('flat',{title:imp?`📢 ${plain(uid)} (important)`:`💬 ${plain(uid)} → everyone`,msg:text,p:imp?5:4});else push(to,{title:`💬 ${plain(uid)} (private)`,msg:text,p:4})}
+$('msgSend').onclick=sendMsg;
+$('msgIn').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!/Mobi|Android|iPhone/i.test(navigator.userAgent)){e.preventDefault();sendMsg()}};
+const seenMsg=new Set();const msgInit={};
+function onMessages(src,list){
+  if(msgInit[src])list.forEach(m=>{if(seenMsg.has(m.id)||m.from===uid)return;seenMsg.add(m.id);
+    if(Date.now()-m.at>10*MIN)return;
+    const viewing=openThread===m.thread&&$('v-chat').classList.contains('on');if(viewing)return;
+    if(m.imp)bigAlert({ic:'📢',bg:'var(--acc)',title:`${plain(m.from)} → everyone`,sub:m.text,chips:[{t:'Open chat',fn:()=>openChat('all')}],close:'OK'});
+    else{toast(`💬 ${plain(m.from)}${m.thread==='all'?' (Everyone)':' (private)'}: ${m.text.slice(0,70)}`,5000,()=>openChat(m.thread));beep()}});
+  else list.forEach(m=>seenMsg.add(m.id));
+  msgInit[src]=true;renderThreads();
+}
+function beep(){try{if(actx){const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;g.gain.setValueAtTime(.18,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.2);o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+.22)}}catch(e){}try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}}
+async function savePdf(pdf,filename){const bytes=await pdf.bytes();
+  if(!downloads){toast('Downloads aren’t available in this view — open the app from its claude.ai link',6000);return}
+  try{await downloads.save({filename,data:new Blob([bytes],{type:'application/pdf'})});toast('Report saved ✔')}catch(e){if(e?.code!=='declined')toast('Could not save the PDF ('+(e?.code||'error')+')')}}
+async function runReport(btn,fn){const t=btn.textContent;btn.disabled=true;btn.textContent='Preparing…';try{await fn()}catch(e){console.error(e);toast('Could not build the report — try again')}btn.disabled=false;btn.textContent=t}
+$('dlWeek').onclick=()=>runReport($('dlWeek'),weeklyPdf);
+
+/* ======================= push notifications (ntfy) ======================= */
+let PUSH=false,FB=null,isAdmin=false,TOPIC='';
+const myTopic=id=>TOPIC+'-'+String(id).replace(/[^A-Za-z0-9]/g,'').slice(0,10);
+function push(to,o){
+  if(!PUSH||!TOPIC||!to)return;
+  try{const body={topic:to==='flat'?TOPIC:myTopic(to),title:String(o.title).slice(0,120),message:String(o.msg||' ').slice(0,900),priority:o.p||3,click:location.href.split('#')[0]};
+    if(o.at&&o.at>Date.now()+30e3)body.delay=String(Math.floor(o.at/1000));
+    fetch('https://ntfy.sh/',{method:'POST',body:JSON.stringify(body)}).catch(()=>{})}catch(e){}
+}
+function firstWaiting(room,except){return qFor(room).find(q=>q.uid!==except)}
+
+/* ======================= boot ======================= */
+function renderAll(){renderPresence();renderThreads();renderReports();renderKeys();renderQuiet();renderRooms();renderGuests();renderActivity();renderFeed();renderMembers()}
+function gate(msg){$('gate').style.display='block';$('gate').innerHTML=msg}
+function sub(q,fn){q.onSnapshot(s=>{try{fn(s)}catch(e){console.error(e)}},e=>{console.error('listener',e&&e.code);if(e&&(e.code==='revoked'||e.code==='permission_denied'))gate('Your access to the app changed — ask the flat admin, then reload.')})}
+window.addEventListener('unhandledrejection',e=>{console.warn('unhandled',e.reason)});
+async function boot(){
+  renderAll();renderWeekSeg();
+  const CFG=window.FLAT_CONFIG;
+  if(CFG&&CFG.firebase&&CFG.firebase.apiKey)return bootFirebase(CFG);
+  const t0=Date.now();while(!window.claude&&Date.now()-t0<10000)await new Promise(r=>setTimeout(r,100));
+  if(!window.claude)return gate('Setup isn’t finished: fill in <b>config.js</b> (see the setup guide).');
+  const timer=setTimeout(()=>{if(!ready.rooms)gate('⏳ Can’t reach the flat data yet — check your connection.')},10000);
+  [db,user,downloads]=await Promise.all([claude.use('db'),claude.use('user'),claude.use('downloads').catch(()=>null)]);
+  if(!db||!user){clearTimeout(timer);return gate('🔒 Sign in to Claude with the account the flat owner invited to see live status.')}
+  uid=await user.id();
+  if(!uid){clearTimeout(timer);return gate('🔒 Sign in to Claude to use the app.')}
+  try{if(await user.can('data.write')===false){canWrite=false;gate('👀 You can view but not tap. Ask the flat owner to invite you as an <b>Editor</b>.')}}catch(e){}
+  startApp(timer);
+}
+function startApp(timer){
+  document.body.classList.remove('locked');
+  const done=()=>{if(!ready.rooms){ready.rooms=1;clearTimeout(timer);if($('gate').textContent.startsWith('⏳'))$('gate').style.display='none'}};
+  sub(db.collection('rooms'),s=>{S.rooms={};s.docs.forEach(d=>S.rooms[d.id]=d.data());if(!s.metadata.fromCache)done();onRoomsChange();renderRooms()});
+  sub(db.collection('kitchen'),s=>{S.cooks={};s.docs.forEach(d=>{const x=d.data();if(x&&Array.isArray(x.burners))S.cooks[d.id]=x});onCooksChange();renderRooms()});
+  sub(db.collection('queue'),s=>{S.queue=s.docs.map(d=>d.data());renderRooms()});
+  let named=false;
+  sub(db.collection('members'),async s=>{S.members={};s.docs.forEach(d=>S.members[d.id]=d.data());renderAll();
+    if(!s.metadata.fromCache&&!named){named=true;if(!S.members[uid]&&canWrite){let def='';try{def=(await user.me()).name||''}catch(e){}askName(def.split(' ')[0])}}});
+  sub(db.doc('settings/keys'),s=>{S.keys=s.exists?s.data():null;renderKeys()});
+  sub(db.doc('settings/house'),s=>{S.house=s.exists?s.data():null;renderQuiet()});
+  sub(db.collection('polls').orderBy('at','desc').limit(60),s=>{S.polls=s.docs.map(d=>({id:d.id,...d.data()}));onPollsChange();renderFeed()});
+  sub(db.collection('votes').where('at','>=',Date.now()-90*DAY).limit(800),s=>{S.votes=s.docs.map(d=>({id:d.id,...d.data()}));renderFeed()});
+  sub(db.collection('sessions').orderBy('end','desc').limit(12),s=>{S.sessions=s.docs.map(d=>d.data());renderActivity();statsDebounced()});
+  sub(db.collection('bookings').where('end','>=',Date.now()-36e5).limit(200),s=>{S.bookings=s.docs.map(d=>({id:d.id,...d.data()}));renderRooms()});
+  sub(db.collection('guests').where('to','>=',dayStart(Date.now())-7*DAY).limit(200),s=>{S.guests=s.docs.map(d=>({id:d.id,...d.data()}));renderGuests()});
+  sub(db.collection('nudges').where('to','==',uid),s=>{S.nIn=s.docs.map(d=>({id:d.id,...d.data()}));onNudgesIn()});
+  sub(db.collection('nudges').where('from','==',uid),s=>{S.nOut=s.docs.map(d=>({id:d.id,...d.data()})).filter(n=>Date.now()-n.at<60*MIN);onNudgesOut()});
+  sub(db.collection('presence'),s=>{S.presence={};s.docs.forEach(d=>S.presence[d.id]=d.data());onPresence();renderPresence()});
+  sub(db.collection('chat_all').orderBy('at','desc').limit(80),s=>{S.msgAll=s.docs.map(d=>({id:d.id,thread:'all',...d.data()}));onMessages('all',S.msgAll)});
+  sub(db.collection('dm').where('to','==',uid),s=>{S.msgIn=s.docs.map(d=>({id:d.id,...d.data()}));onMessages('in',S.msgIn)});
+  sub(db.collection('dm').where('from','==',uid),s=>{S.msgOut=s.docs.map(d=>({id:d.id,...d.data()}));onMessages('out',S.msgOut)});
+  sub(db.collection('reports').orderBy('month','desc').limit(36),s=>{S.reports=s.docs.map(d=>d.data()).filter(r=>r&&r.label&&r.rows);renderReports()});
+  if(MODE==='firebase')sub(db.doc('settings/notify'),async s=>{const t=s.exists?s.data().topic:'';
+    if(t&&/^[A-Za-z0-9_-]{8,40}$/.test(t)){if(t!==TOPIC){TOPIC=t;renderFirebaseSettings()}}
+    else if(isAdmin&&!s.metadata.fromCache){const a=new Uint8Array(12);crypto.getRandomValues(a);const nt='rci83-'+[...a].map(x=>'abcdefghijklmnopqrstuvwxyz0123456789'[x%36]).join('');await safe(()=>db.doc('settings/notify').set({topic:nt,at:Date.now()}))}
+    else renderFirebaseSettings()});
+  setTimeout(autoArchive,6000);
+  setInterval(tick,15000);setTimeout(tick,3000);
+  setTimeout(async()=>{if(!canWrite)return;try{const cut=Date.now()-KEEP_DAYS*DAY;for(const [c,f] of [['sessions','end'],['nudges','at'],['bookings','end'],['chat_all','at'],['dm','at'],['votes','at']]){const old=await db.collection(c).where(f,'<',cut).limit(25).get();for(const d of old.docs)await db.doc(c+'/'+d.id).delete()}}catch(e){console.warn('prune',e)}},9000);
+}
+
+/* ======================= Firebase mode (own website) ======================= */
+let MODE='claude';
+const FBV='10.12.2';
+function loadFirebase(){const b=`https://www.gstatic.com/firebasejs/${FBV}/`;return Promise.all([import(b+'firebase-app.js'),import(b+'firebase-auth.js'),import(b+'firebase-firestore.js')]).then(([A,AU,FS])=>({A,AU,FS}))}
+function fsDb(F,fs){
+  const meta=m=>({fromCache:!!(m&&m.fromCache),hasPendingWrites:!!(m&&m.hasPendingWrites)});
+  const sd=s=>{const ex=s.exists();return{id:s.id,exists:ex,data:()=>ex?s.data():undefined,metadata:meta(s.metadata)}};
+  const qs=q=>{const docs=q.docs.map(sd);return{docs,size:docs.length,empty:!docs.length,metadata:meta(q.metadata),docChanges:()=>[]}};
+  const err=e=>{const c=String(e&&e.code||'').replace(/^firestore\//,'');return{code:{'permission-denied':'permission_denied','resource-exhausted':'quota_exceeded','invalid-argument':'invalid_argument','not-found':'invalid_argument','failed-precondition':'invalid_argument','unavailable':'unavailable'}[c]||'unavailable',message:String(e&&e.message||e)}};
+  const W=p=>p.catch(e=>{throw err(e)});
+  function Q(path,cons=[]){const col=F.collection(fs,path),qq=()=>cons.length?F.query(col,...cons):col;
+    return{path,where:(f,op,v)=>Q(path,[...cons,F.where(f,op,v)]),orderBy:(f,d)=>Q(path,[...cons,F.orderBy(f,d||'asc')]),limit:n=>Q(path,[...cons,F.limit(n)]),
+      get:()=>W(F.getDocs(qq()).then(qs)),
+      onSnapshot:(next,e)=>F.onSnapshot(qq(),x=>next(qs(x)),x=>e&&e(err(x))),
+      doc:id=>D(id?path+'/'+id:F.doc(col).path),
+      add:async data=>{const r=F.doc(col);await W(F.setDoc(r,data));return D(r.path)}}}
+  function D(path){const r=F.doc(fs,path);
+    return{id:r.id,path,get:()=>W(F.getDoc(r).then(sd)),set:d=>W(F.setDoc(r,d)),update:d=>W(F.updateDoc(r,d)),delete:()=>W(F.deleteDoc(r)),
+      onSnapshot:(next,e)=>F.onSnapshot(r,x=>next(sd(x)),x=>e&&e(err(x))),
+      acquire:async({holder,ttlMs=30000})=>{try{return await F.runTransaction(fs,async tx=>{const s=await tx.get(r);const l=s.exists()?s.data()._lease:null;
+        if(l&&l.exp>Date.now()&&l.holder!==holder)return{acquired:false,expiresAt:new Date(l.exp).toISOString()};
+        tx.set(r,{_lease:{holder,exp:Date.now()+ttlMs}},{merge:true});return{acquired:true}})}catch(e){throw err(e)}},
+      collection:c=>Q(path+'/'+c)}}
+  return{doc:D,collection:p=>Q(p)};
+}
+const blobDownloads=()=>({save:async({filename,data})=>{const blob=data instanceof Blob?data:new Blob([data]);const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},8000);return{status:'saved'}}});
+function addManifest(){if(document.querySelector('link[rel=manifest]'))return;[['manifest','manifest.json'],['apple-touch-icon','icon-192.png'],['icon','icon-192.png']].forEach(([r,h])=>{const l=document.createElement('link');l.rel=r;l.href=h;document.head.appendChild(l)});const m=document.createElement('meta');m.name='apple-mobile-web-app-capable';m.content='yes';document.head.appendChild(m)}
+const authMsg=e=>{const c=String(e&&e.code||'');return{
+  'auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'No account with this email — tap “Create account”.',
+  'auth/email-already-in-use':'This email already has an account — sign in instead (or reset the password).','auth/weak-password':'Password must be at least 6 characters.',
+  'auth/invalid-email':'That email address looks wrong.','auth/too-many-requests':'Too many tries — wait a few minutes.','auth/network-request-failed':'No internet connection.',
+  'auth/unauthorized-domain':'This website isn’t authorised in Firebase yet (setup step: Authorized domains).','auth/operation-not-allowed':'This sign-in method isn’t switched on in Firebase yet.'}[c]||('Sign-in failed ('+(c||'error')+').')};
+async function bootFirebase(CFG){
+  MODE='firebase';document.body.classList.add('locked');addManifest();gate('⏳ Connecting…');
+  let F;try{F=await loadFirebase()}catch(e){console.error(e);return gate('Could not load the app — check your internet connection, then reload. <button class="ghost" onclick="location.reload()">Reload</button>')}
+  const {A,AU,FS}=F;let app,auth,fs;
+  try{app=A.initializeApp(CFG.firebase);auth=AU.getAuth(app)}catch(e){console.error(e);return gate('The Firebase settings in config.js look wrong — check them against the setup guide.')}
+  try{fs=FS.initializeFirestore(app,{ignoreUndefinedProperties:true,localCache:FS.persistentLocalCache({tabManager:FS.persistentMultipleTabManager()})})}
+  catch(e){try{fs=FS.initializeFirestore(app,{ignoreUndefinedProperties:true})}catch(e2){fs=FS.getFirestore(app)}}
+  FB={A,AU,FS,app,auth,fs,CFG};
+  try{await AU.getRedirectResult(auth)}catch(e){if(e&&e.code)toast(authMsg(e),6000)}
+  let started=false;
+  AU.onAuthStateChanged(auth,async u=>{
+    if(started){if(!u)location.reload();return}
+    if(!u)return showLogin();
+    const email=String(u.email||'').toLowerCase();
+    if(!u.emailVerified)return showVerify(u);
+    let admin=false,ok=false;
+    try{await FS.getDocs(FS.query(FS.collection(fs,'allow'),FS.limit(1)));admin=ok=true}catch(e){/* only the admin may list the allow-list */}
+    if(!admin){try{ok=(await FS.getDoc(FS.doc(fs,'allow/'+email))).exists()}catch(e){console.warn(e)}}
+    if(!ok)return showNotAllowed(email);
+    started=true;isAdmin=admin;
+    db=fsDb(FS,fs);uid=u.uid;downloads=blobDownloads();PUSH=true;
+    user={id:async()=>u.uid,me:async()=>({name:u.displayName||email.split('@')[0]}),can:async()=>true,email};
+    $('gate').style.display='none';
+    startApp(setTimeout(()=>{if(!ready.rooms)gate('⏳ Can’t reach the flat data yet — check your connection.')},12000));
+  });
+}
+function showLogin(){
+  gate(`<h2 style="font-size:22px;margin-bottom:4px">🏠 ${esc(APP)}</h2><p class="note">Sign in to see the flat. Use the same account on your phone and laptop.</p>
+   <button class="big b-acc" style="width:100%;margin-top:6px" id="gIn">Continue with Google</button>
+   <div class="note" style="text-align:center;margin:12px 0 2px">— or with email —</div>
+   <input type="text" id="lE" inputmode="email" autocomplete="email" placeholder="Email" aria-label="Email"><input type="password" id="lP" autocomplete="current-password" placeholder="Password (6+ characters)" aria-label="Password" style="margin-top:8px;width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:12px;min-height:44px;font-size:16px">
+   <div class="row" style="margin-top:10px"><button class="big b-free" id="lIn">Sign in</button><button class="ghost" id="lUp">Create account</button></div>
+   <button class="lnk" id="lRe">Forgot password?</button><div class="note" id="lErr" style="color:var(--busy);margin-top:6px"></div>`);
+  const {AU,auth}=FB,err=t=>$('lErr').textContent=t,cred=()=>[$('lE').value.trim(),$('lP').value];
+  $('gIn').onclick=async()=>{err('');const pr=new AU.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});
+    try{await AU.signInWithPopup(auth,pr)}catch(e){const c=String(e&&e.code);if(/popup-blocked|operation-not-supported|web-storage-unsupported/.test(c)){try{await AU.signInWithRedirect(auth,pr)}catch(e2){err(authMsg(e2))}}else if(!/popup-closed|cancelled-popup/.test(c))err(authMsg(e))}};
+  $('lIn').onclick=async()=>{err('');const[e,p]=cred();if(!e||!p)return err('Enter email and password.');try{await AU.signInWithEmailAndPassword(auth,e,p)}catch(x){err(authMsg(x))}};
+  $('lUp').onclick=async()=>{err('');const[e,p]=cred();if(!e||!p)return err('Enter your email and choose a password.');try{const c=await AU.createUserWithEmailAndPassword(auth,e,p);await AU.sendEmailVerification(c.user)}catch(x){err(authMsg(x))}};
+  $('lRe').onclick=async()=>{const e=$('lE').value.trim();if(!e)return err('Type your email first.');try{await AU.sendPasswordResetEmail(auth,e);err('');toast('Password reset email sent ✔',5000)}catch(x){err(authMsg(x))}};
+  $('lP').onkeydown=e=>{if(e.key==='Enter')$('lIn').click()};
+}
+function showVerify(u){
+  gate(`<h3>📧 Check your email</h3><p class="note">We sent a confirmation link to <b>${esc(u.email)}</b>. Open it (check spam too), then come back and tap the button.</p><div class="row"><button class="big b-acc" id="vOk">I’ve confirmed</button><button class="ghost" id="vRe">Resend</button></div><button class="lnk" id="vOut">Use another account</button>`);
+  $('vOk').onclick=async()=>{try{await u.reload();if(u.emailVerified){await u.getIdToken(true);location.reload()}else toast('Not confirmed yet — open the link in the email first',5000)}catch(e){toast(authMsg(e))}};
+  $('vRe').onclick=async()=>{try{await FB.AU.sendEmailVerification(u);toast('Sent again ✔')}catch(e){toast(authMsg(e))}};
+  $('vOut').onclick=()=>FB.AU.signOut(FB.auth);
+}
+function showNotAllowed(email){
+  gate(`<h3>🔒 Not on the flat list yet</h3><p class="note">You’re signed in as <b>${esc(email)}</b>, but this email hasn’t been added. Ask the flat admin to add it in ⚙️ Settings → “Who can use the app”, then tap Retry.</p><div class="row"><button class="big b-acc" onclick="location.reload()">Retry</button><button class="ghost" id="naOut">Use another account</button></div>`);
+  $('naOut').onclick=()=>FB.AU.signOut(FB.auth);
+}
+function copyText(t,btn){const ok=()=>{const o=btn.textContent;btn.textContent='Copied ✔';setTimeout(()=>btn.textContent=o,1500)};
+  try{navigator.clipboard.writeText(t).then(ok,()=>prompt('Copy this:',t))}catch(e){try{prompt('Copy this:',t)}catch(x){}}}
+function renderFirebaseSettings(){
+  ['notifCard','acctCard'].forEach(i=>$(i).style.display='block');if(isAdmin)$('accessCard').style.display='block';
+  const ft=TOPIC,mt=TOPIC?myTopic(uid):'';
+  $('notifBody').innerHTML=!TOPIC?'<p class="note">Setting up notifications… (the admin needs to open the app once)</p>':`<ol style="padding-left:18px;margin:8px 0;line-height:1.6">
+    <li>Install the free <b>ntfy</b> app: <a href="https://apps.apple.com/app/ntfy/id1625396347" target="_blank" rel="noopener">iPhone</a> · <a href="https://play.google.com/store/apps/details?id=io.heckel.ntfy" target="_blank" rel="noopener">Android</a> · laptop: <a href="https://ntfy.sh/app" target="_blank" rel="noopener">ntfy.sh/app</a></li>
+    <li>In ntfy tap <b>+</b> and subscribe to <b>both</b> topics (server: ntfy.sh):</li></ol>
+    <label>🏠 House topic (rooms free, group messages, votes)</label><div class="row"><input type="text" readonly value="${esc(ft)}" onclick="this.select()"><button class="ghost" data-copy="${esc(ft)}">Copy</button></div>
+    <label>👤 Your personal topic (your turn, urgent & private messages, reminders)</label><div class="row"><input type="text" readonly value="${esc(mt)}" onclick="this.select()"><button class="ghost" data-copy="${esc(mt)}">Copy</button></div>
+    <button class="big b-acc" style="width:100%;margin-top:12px" id="testPush">🔔 Send me a test notification</button>
+    <p class="note">Keep these topic names private — anyone who knows them can read the notifications.</p>`;
+  $('notifBody').onclick=e=>{const c=e.target.closest('[data-copy]');if(c)copyText(c.dataset.copy,c);if(e.target.id==='testPush'){push(uid,{title:'✅ Notifications work!',msg:`Hi ${plain(uid)} — you’ll get alerts from ${APP} here.`,p:4});toast('Sent — it should arrive in ntfy in a few seconds')}};
+  $('acctBody').innerHTML=`<p class="note">Signed in as <b>${esc(user.email)}</b>${isAdmin?' (admin)':''}</p><button class="ghost" id="signOut">Sign out</button>`;
+  $('signOut').onclick=()=>FB.AU.signOut(FB.auth);
+  if(isAdmin&&!renderFirebaseSettings.subbed&&(renderFirebaseSettings.subbed=true))sub(db.collection('allow'),s=>{const list=s.docs.map(d=>d.id).sort();$('allowList').innerHTML=list.length?list.map(e=>`<div class="it"><div class="e">✉️</div><div class="t">${esc(e)}</div><button class="lnk" data-unallow="${esc(e)}">Remove</button></div>`).join(''):'<div class="empty" style="padding:6px">Nobody added yet.</div>'});
+}
+$('allowAdd').onclick=async()=>{const e=$('allowIn').value.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return toast('Enter a valid email');if(await safe(()=>db.doc('allow/'+e).set({by:uid,at:Date.now()}))){$('allowIn').value='';toast('Added ✔ — they can sign in now')}};
+$('allowList').onclick=e=>{const b=e.target.closest('[data-unallow]');if(b){const em=b.dataset.unallow;confirmSheet('Remove access?',em+' will no longer be able to use the app.','Remove','b-busy',()=>safe(()=>db.doc('allow/'+em).delete()))}};
+boot();
+</script>
+</body>
+</html>
