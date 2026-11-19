@@ -1,0 +1,14 @@
+{
+  "name": "flatmate-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time web app for coordinating a shared flat.",
+  "scripts": {
+    "test": "node tests/e2e.js",
+    "test:next-year": "node tests/e2e.js test-output/next-year 2027-11-20T19:30:00+01:00"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  },
+  "license": "MIT"
+}
