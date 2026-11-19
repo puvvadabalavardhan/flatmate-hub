@@ -1,0 +1,22 @@
+rules_version = '2';
+// Flatmate Hub — Firestore security rules.
+// Replace ADMIN_EMAIL_HERE with the admin's sign-in email (lowercase), then publish in the Firebase console.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null && request.auth.token.email_verified == true; }
+    function email() { return request.auth.token.email.lower(); }
+    function isAdmin() { return signedIn() && email() == 'ADMIN_EMAIL_HERE'; }
+    function isMember() { return signedIn() && (isAdmin() || exists(/databases/$(database)/documents/allow/$(email()))); }
+
+    // The list of allowed emails: only the admin can see or change the whole list;
+    // a flatmate can only check their own entry.
+    match /allow/{addr} {
+      allow read: if isAdmin() || (signedIn() && email() == addr);
+      allow write: if isAdmin();
+    }
+    // Everything else: any allowed flatmate can read and write.
+    match /{col}/{id} {
+      allow read, write: if col != 'allow' && isMember();
+    }
+  }
+}
